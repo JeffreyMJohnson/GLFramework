@@ -1,16 +1,18 @@
 #include <iostream>
-#include "Framework.h"
-#include "Globals.h"
+//#include "Framework.h"
+//#include "Globals.h"
+#include "Application.h"
 
-typedef GLF::Framework Frwk;
+//typedef GLF::Framework Frwk;
 
 int main()
 {
-	if (Frwk::Initialize(MNF::Globals::SCREEN_WIDTH, MNF::Globals::SCREEN_HEIGHT, "Game Title") == 0)
-	{	//framework didn't initialize
-		return -1;
-	}
+	Application appInstance;
+	appInstance.Initialize(MNF::Globals::SCREEN_WIDTH, MNF::Globals::SCREEN_HEIGHT, "My Game Title");
 
-	Frwk::Shutdown();
+
+
+	appInstance.Shutdown();
+
 	return 0;
 }

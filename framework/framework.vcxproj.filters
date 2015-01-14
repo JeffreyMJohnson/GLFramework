@@ -26,6 +26,12 @@
     <ClInclude Include="include\Globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Sprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\FlatFragmentShader.glsl">
