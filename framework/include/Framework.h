@@ -9,7 +9,8 @@
 #include "glm\glm.hpp"
 #include "SOIL\SOIL.h"
 #include "Globals.h"
-#include "Player.h"
+//#include "Player.h"
+#include "Sprite.h"
 #include <fstream>
 #include <vector>
 #include <string>
@@ -54,7 +55,8 @@ namespace GLF
 			orthographicProjection = getOrtho(0, MNF::Globals::SCREEN_WIDTH, 0, MNF::Globals::SCREEN_HEIGHT, 0, 100);
 			backgroundColor = a_backgroundColor;
 
-			player.Initialize(vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1), vec4(1, 1, 1, 1), uiProgramTextured);
+			//player.Initialize(vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1), vec4(1, 1, 1, 1), uiProgramTextured);
+			mySprite.Initialize(vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1), vec4(1, 1, 1, 1), uiProgramTextured);
 			return -1;
 
 		}
@@ -86,7 +88,8 @@ namespace GLF
 
 		void DrawSprite()
 		{
-			player.Draw(IDTexture, orthographicProjection);
+			//player.Draw(IDTexture, orthographicProjection);
+			mySprite.Draw(IDTexture, orthographicProjection);
 		}
 
 		GLuint GetShaderProgram()
@@ -119,7 +122,8 @@ namespace GLF
 		float* orthographicProjection;
 		vec4 backgroundColor;
 
-		Player player;
+		//Player player;
+		Sprite mySprite;
 
 		void CreateShaderProgram()
 		{
