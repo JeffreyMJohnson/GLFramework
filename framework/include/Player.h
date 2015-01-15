@@ -98,6 +98,13 @@ public:
 private:
 	void LoadModelVertices()
 	{
+		int width = 100;
+		int height = 100;
+		float hWidth = width * .5;
+		float hHeight = height * .5;
+		float posX = 1024 * .5;
+		float posY = 768 * .5;
+
 		modelVertices.push_back(glm::vec4(0, 10.0f, 0, 1));
 		modelVertices.push_back(glm::vec4(-5.0f, -10.0f, 0, 1));
 		modelVertices.push_back(glm::vec4(5.0f, -10.0f, 0, 1));

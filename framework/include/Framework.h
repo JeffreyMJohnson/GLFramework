@@ -80,6 +80,21 @@ namespace GLF
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 
+		GLuint GetShaderProgram()
+		{
+			return uiProgramTextured;
+		}
+
+		GLuint GetShaderMVP()
+		{
+			return IDTexture;
+		}
+
+		float* GetOrtho()
+		{
+			return orthographicProjection;
+		}
+
 		/**
 		This should be called prior exiting program
 		*/
