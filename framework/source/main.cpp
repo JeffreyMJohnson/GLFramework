@@ -1,16 +1,26 @@
 #include <iostream>
 #include "Framework.h"
-#include "Globals.h"
 
-typedef GLF::Framework Frwk;
+#include "Player.h"
 
+
+GLF::Framework fk;
 int main()
 {
-	if (Frwk::Initialize(MNF::Globals::SCREEN_WIDTH, MNF::Globals::SCREEN_HEIGHT, "Game Title") == 0)
+
+
+	if (fk.Initialize(MNF::Globals::SCREEN_WIDTH, MNF::Globals::SCREEN_HEIGHT, "Game Title", vec4(0,1,0,0)) == 0)
 	{	//framework didn't initialize
 		return -1;
 	}
 
-	Frwk::Shutdown();
+	do
+	{
+
+
+		fk.ClearScreen();
+	} while (fk.FrameworkUpdated());
+
+	fk.Shutdown();
 	return 0;
 }
