@@ -7,7 +7,9 @@
 //glew must be included first
 #include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
+#include "SOIL\SOIL.h"
 #include "Globals.h"
+#include "Player.h"
 #include <fstream>
 #include <vector>
 #include <string>
@@ -51,6 +53,8 @@ namespace GLF
 			IDTexture = glGetUniformLocation(uiProgramTextured, "MVP");
 			orthographicProjection = getOrtho(0, MNF::Globals::SCREEN_WIDTH, 0, MNF::Globals::SCREEN_HEIGHT, 0, 100);
 			backgroundColor = a_backgroundColor;
+
+			player.Initialize(vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1), vec4(1, 1, 1, 1), uiProgramTextured);
 			return -1;
 
 		}
@@ -78,6 +82,11 @@ namespace GLF
 		{
 			glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 			glClear(GL_COLOR_BUFFER_BIT);
+		}
+
+		void DrawSprite()
+		{
+			player.Draw(IDTexture, orthographicProjection);
 		}
 
 		GLuint GetShaderProgram()
@@ -109,6 +118,8 @@ namespace GLF
 		GLuint IDTexture;
 		float* orthographicProjection;
 		vec4 backgroundColor;
+
+		Player player;
 
 		void CreateShaderProgram()
 		{
