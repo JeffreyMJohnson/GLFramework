@@ -88,7 +88,7 @@ public:
 		//now we have UVs to worry about, we need to send that info to the graphics card too
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 8));
 
-		glDrawElements(GL_TRIANGLES, modelVertices.size(), GL_UNSIGNED_BYTE, NULL);
+		glDrawElements(GL_QUADS, modelVertices.size(), GL_UNSIGNED_BYTE, NULL);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -98,23 +98,25 @@ public:
 private:
 	void LoadModelVertices()
 	{
-		int width = 100;
-		int height = 100;
+		int width = 500;
+		int height = 500;
 		float hWidth = width * .5;
 		float hHeight = height * .5;
 		float posX = 1024 * .5;
 		float posY = 768 * .5;
 
-		modelVertices.push_back(glm::vec4(0, 10.0f, 0, 1));
-		modelVertices.push_back(glm::vec4(-5.0f, -10.0f, 0, 1));
-		modelVertices.push_back(glm::vec4(5.0f, -10.0f, 0, 1));
+		modelVertices.push_back(glm::vec4(-hWidth, hHeight, 0, 1));
+		modelVertices.push_back(glm::vec4(hWidth, hHeight, 0, 1));
+		modelVertices.push_back(glm::vec4(hWidth, -hHeight, 0, 1));
+		modelVertices.push_back(glm::vec4(-hWidth, -hHeight, 0, 1));
 	}
 
 	void LoadModelUVs()
 	{
-		modelUVs.push_back(glm::vec2(.5, 1));
-		modelUVs.push_back(glm::vec2(0, 0));
+		modelUVs.push_back(glm::vec2(0, 1));
+		modelUVs.push_back(glm::vec2(1, 1));
 		modelUVs.push_back(glm::vec2(1, 0));
+		modelUVs.push_back(glm::vec2(0, 0));
 	}
 };
 #endif
