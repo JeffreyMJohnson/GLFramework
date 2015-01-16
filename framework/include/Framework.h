@@ -71,6 +71,7 @@ namespace GLF
 		void MoveSprite(const vec4& a_position)
 		{
 			mySprite.SetPosition(a_position);
+			UpdateVBO(mySprite.uiVBO, mySprite.verticesBuffer, 4);
 		}
 
 		bool FrameworkUpdated()
@@ -133,7 +134,6 @@ namespace GLF
 		float* orthographicProjection;
 		vec4 backgroundColor;
 
-		//Player player;
 		Sprite mySprite;
 
 		void CreateShaderProgram()
@@ -291,6 +291,18 @@ namespace GLF
 				}
 				return uiTextureID;
 			}
+		}
+
+		void UpdateVBO(GLuint& VBO, Vertex* verticeBuffer, int size )
+		{
+			//bind vbo
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			//allocate space for vertices on the graphics card
+			//size of buffer needs to be 3 vec4 for vertices and 3 vec4 for 
+			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * size, verticeBuffer , GL_STATIC_DRAW);
+
+			//unmap and unbind buffer
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
 	};
 }

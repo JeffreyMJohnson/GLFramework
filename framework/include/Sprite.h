@@ -124,34 +124,19 @@ public:
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	GLuint uiTextureID;
+	GLuint uiVBO;
+	Vertex* verticesBuffer;
 private:
 	std::vector<glm::vec4> modelVertices;
 	std::vector<glm::vec2> modelUVs;
 	glm::vec4 position;
-	GLuint uiVBO;
+	
 	
 	GLuint programShader;
-	Vertex* verticesBuffer;
+	
 	int width;
 	int height;
 	char* fileName;
-
-	void UpdateVBO()
-	{
-		//bind vbo
-		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-		//allocate space for vertices on the graphics card
-		//size of buffer needs to be 3 vec4 for vertices and 3 vec4 for 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * modelVertices.size(), verticesBuffer, GL_STATIC_DRAW);
-		//get pointer to allocated space on the graphics card
-		//GLvoid* vBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-
-		//copy data to graphics card
-		//memcpy(vBuffer, verticesBuffer, sizeof(Vertex) * modelVertices.size());
-		//unmap and unbind buffer
-		glUnmapBuffer(GL_ARRAY_BUFFER);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
 
 	void UpdateVertices()
 	{
@@ -168,7 +153,6 @@ private:
 			verticesBuffer[i].fUVs[0] = modelUVs[i].x;
 			verticesBuffer[i].fUVs[1] = modelUVs[i].y;
 		}
-		UpdateVBO();
 	}
 
 
