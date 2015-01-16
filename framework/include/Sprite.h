@@ -28,23 +28,20 @@ public:
 	{
 		delete verticesBuffer;
 	}
-	void Initialize(const char* fileName, GLuint& a_ShaderProgram, int width, int height)
+	void Initialize(GLuint& a_ShaderProgram, int width, int height)
 	{
 
 		this->width = width;
 		this->height = height;
+		this->fileName = fileName;
 		LoadModelVertices();
 		LoadModelUVs();
 		verticesBuffer = new Vertex[modelVertices.size()];
 		position = glm::vec4();
 		glGenBuffers(1, &uiVBO);
-		glGenBuffers(1, &uiIBO);
 		programShader = a_ShaderProgram;
 		UpdateVertices();
-		int textureWidth = 50;
-		int textureHeight = 50;
-		int textureBPP = 4;
-		uiTextureID = loadTexture(fileName, textureWidth, textureHeight, textureBPP);
+
 	}
 
 	void SetPosition(const glm::vec4& a_position)
@@ -55,7 +52,7 @@ public:
 
 	void CleanUp()
 	{
-		glDeleteBuffers(1, &uiIBO);
+		glDeleteBuffers(1, &uiVBO);
 	}
 
 	void Update(GLFWwindow* windowHandle)
@@ -115,30 +112,29 @@ public:
 
 		glBindTexture(GL_TEXTURE_2D, uiTextureID);
 		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, uiIBO);
 
 		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 4));
 		//now we have UVs to worry about, we need to send that info to the graphics card too
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 8));
 
-		glDrawElements(GL_QUADS, modelVertices.size(), GL_UNSIGNED_BYTE, NULL);
+		glDrawArrays(GL_QUADS, 0, sizeof(Vertex));
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+	GLuint uiTextureID;
 private:
 	std::vector<glm::vec4> modelVertices;
 	std::vector<glm::vec2> modelUVs;
 	glm::vec4 position;
 	GLuint uiVBO;
-	GLuint uiIBO;
-	GLuint uiTextureID;
+	
 	GLuint programShader;
 	Vertex* verticesBuffer;
 	int width;
 	int height;
+	char* fileName;
 
 	void UpdateVBO()
 	{
@@ -146,34 +142,15 @@ private:
 		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
 		//allocate space for vertices on the graphics card
 		//size of buffer needs to be 3 vec4 for vertices and 3 vec4 for 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * modelVertices.size(), NULL, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * modelVertices.size(), verticesBuffer, GL_STATIC_DRAW);
 		//get pointer to allocated space on the graphics card
-		GLvoid* vBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		//GLvoid* vBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 
 		//copy data to graphics card
-		memcpy(vBuffer, verticesBuffer, sizeof(Vertex) * modelVertices.size());
+		//memcpy(vBuffer, verticesBuffer, sizeof(Vertex) * modelVertices.size());
 		//unmap and unbind buffer
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
-	void UpdateIBO()
-	{
-		//bind IBO
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, uiIBO);
-		//allocate space for index info on  the graphics card
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, modelVertices.size() * sizeof(char), NULL, GL_STATIC_DRAW);
-		//get pointer to newly allocated space on GPU
-		GLvoid* iBuffer = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
-		//specify order to draw vertices
-		//in this case it's in sequential order
-		for (int i = 0; i < modelVertices.size(); i++)
-		{
-			((char*)iBuffer)[i] = i;
-		}
-		//unmap and unbind 
-		glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	void UpdateVertices()
@@ -192,44 +169,13 @@ private:
 			verticesBuffer[i].fUVs[1] = modelUVs[i].y;
 		}
 		UpdateVBO();
-		UpdateIBO();
 	}
 
-	unsigned int loadTexture(const char* a_pFilename, int & a_iWidth, int & a_iHeight, int & a_iBPP)
-	{
-		unsigned int uiTextureID = 0;
-		//check file exists
-		if (a_pFilename != nullptr)
-		{
-			//read in image data from file
-			unsigned char* pImageData = SOIL_load_image(a_pFilename, &a_iWidth, &a_iHeight, &a_iBPP, SOIL_LOAD_AUTO);
 
-			//check for successful read
-			if (pImageData)
-			{
-				//create opengl texture handle
-				uiTextureID = SOIL_create_OGL_texture(pImageData, a_iWidth, a_iHeight, a_iBPP,
-					SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
-				//clear what was read in from file now that it is stored in the handle
-				SOIL_free_image_data(pImageData);
-			}
-
-			//check for errors
-			if (uiTextureID == 0)
-			{
-				std::cerr << "SOIL loading error: " << SOIL_last_result() << std::endl;
-			}
-			return uiTextureID;
-		}
-	}
 	void LoadModelVertices()
 	{
-		//int width = 500;
-		//int height = 500;
 		float hWidth = width * .5;
 		float hHeight = height * .5;
-		float posX = 1024 * .5;
-		float posY = 768 * .5;
 
 		modelVertices.push_back(glm::vec4(-hWidth, hHeight, 0, 1));
 		modelVertices.push_back(glm::vec4(hWidth, hHeight, 0, 1));
