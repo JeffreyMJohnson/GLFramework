@@ -18,11 +18,6 @@ struct Vertex
 class Sprite
 {
 public:
-	Sprite()
-	{
-
-
-	}
 
 	~Sprite()
 	{
@@ -38,9 +33,6 @@ public:
 		LoadModelUVs();
 		verticesBuffer = new Vertex[modelVertices.size()];
 		position = glm::vec4();
-		//glGenBuffers(1, &uiVBO);
-		//this->uiVBO = VBO;
-		programShader = a_ShaderProgram;
 		UpdateVertices();
 
 	}
@@ -51,59 +43,14 @@ public:
 		UpdateVertices();
 	}
 
-	void Update(GLFWwindow* windowHandle)
-	{
-		if (glfwGetKey(windowHandle, GLFW_KEY_W) == GLFW_PRESS)
-		{
-			//move forward 
-			//std::cout << "move forward" << std::endl;
-			for (int i = 0; i < 3; i++)
-			{
-				modelVertices[i].y += .01f;
-			}
-			UpdateVertices();
-		}
-
-		if (glfwGetKey(windowHandle, GLFW_KEY_S))
-		{
-			//move backwards
-			for (int i = 0; i < modelVertices.size(); i++)
-			{
-				modelVertices[i].y -= .01f;
-			}
-			UpdateVertices();
-		}
-
-		if (glfwGetKey(windowHandle, GLFW_KEY_A))
-		{
-			//move backwards
-			for (int i = 0; i < modelVertices.size(); i++)
-			{
-				modelVertices[i].x -= .01f;
-			}
-			UpdateVertices();
-		}
-		if (glfwGetKey(windowHandle, GLFW_KEY_D))
-		{
-			//move backwards
-			for (int i = 0; i < modelVertices.size(); i++)
-			{
-				modelVertices[i].x += .01f;
-			}
-			UpdateVertices();
-		}
-	}
-
 	GLuint uiTextureID;
 	GLuint uiVBO;
 	Vertex* verticesBuffer;
+	
 private:
 	std::vector<glm::vec4> modelVertices;
 	std::vector<glm::vec2> modelUVs;
 	glm::vec4 position;
-	
-	
-	GLuint programShader;
 	
 	int width;
 	int height;

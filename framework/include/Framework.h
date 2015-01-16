@@ -19,6 +19,16 @@ typedef glm::vec4 vec4;
 
 namespace GLF
 {
+	enum KEY_CODE
+	{
+		SPACE_BAR = GLFW_KEY_SPACE,
+		W = GLFW_KEY_W,
+		S = GLFW_KEY_S,
+		A = GLFW_KEY_A,
+		D = GLFW_KEY_D,
+		ESC = GLFW_KEY_ESCAPE
+	};
+
 	class Framework
 	{
 	public:
@@ -94,6 +104,11 @@ namespace GLF
 			backgroundColor = a_color;
 		}
 
+		bool IsKeyPressed(KEY_CODE key)
+		{
+			return glfwGetKey(windowHandle, key);
+		}
+
 		void ClearScreen()
 		{
 			glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
@@ -124,22 +139,6 @@ namespace GLF
 
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
-			//mySprite.Draw(shaderProgram, IDTexture, orthographicProjection);
-		}
-
-		GLuint GetShaderProgram()
-		{
-			return shaderProgram;
-		}
-
-		GLuint GetShaderMVP()
-		{
-			return IDTexture;
-		}
-
-		float* GetOrtho()
-		{
-			return orthographicProjection;
 		}
 
 		/**
