@@ -9,13 +9,13 @@
 #include "glm\glm.hpp"
 #include "SOIL\SOIL.h"
 #include "Globals.h"
-//#include "Player.h"
 #include "Sprite.h"
 #include <fstream>
 #include <vector>
 #include <string>
 
 typedef glm::vec4 vec4;
+typedef unsigned int uint;
 
 namespace GLF
 {
@@ -69,20 +69,39 @@ namespace GLF
 
 		}
 
-		void CreateSprite(char* a_fileName, int a_width, int a_height)
-		{
-			glGenBuffers(1, &mySprite.uiVBO);
-			mySprite.Initialize(shaderProgram, a_width, a_height);
+		/**
+		Create a 2D sprite from given filename with given width and height.
+		returns a unique Sprite ID
+		*/
+		const uint CreateSprite(char* a_fileName, int a_width, int a_height)
+		{	
+			Sprite* newSprite = new Sprite;
+			//glGenBuffers(1, &mySprite.uiVBO);
+			glGenBuffers(1, &newSprite->uiVBO);
+
+			//mySprite.Initialize(shaderProgram, a_width, a_height);
+			newSprite->Initialize(shaderProgram, a_width, a_height);
+
 			int textureWidth = 50;
 			int textureHeight = 50;
 			int textureBPP = 4;
-			mySprite.uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+
+			//mySprite.uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			newSprite->uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			spriteList.push_back(newSprite);
+			
+			//return the sprites index for accessing later without search
+			return spriteList.size() - 1;
 		}
 
-		void MoveSprite(const vec4& a_position)
+		void MoveSprite(const uint spriteID, const vec4& a_position)
 		{
-			mySprite.SetPosition(a_position);
-			UpdateVBO(mySprite.uiVBO, mySprite.verticesBuffer, 4);
+			Sprite* s = spriteList[spriteID];
+			//mySprite.SetPosition(a_position);
+			s->SetPosition(a_position);
+
+			//UpdateVBO(mySprite.uiVBO, mySprite.verticesBuffer, 4);
+			UpdateVBO(s->uiVBO, s->verticesBuffer, 4);
 		}
 
 		bool FrameworkUpdated()
@@ -115,7 +134,7 @@ namespace GLF
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 
-		void DrawSprite()
+		void DrawSprite(const uint spriteID)
 		{
 			glUseProgram(shaderProgram);
 
@@ -127,8 +146,11 @@ namespace GLF
 			glEnableVertexAttribArray(1);
 			glEnableVertexAttribArray(2);
 
-			glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
-			glBindBuffer(GL_ARRAY_BUFFER, mySprite.uiVBO);
+			//glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
+			glBindTexture(GL_TEXTURE_2D,spriteList[spriteID]->uiTextureID);
+
+			//glBindBuffer(GL_ARRAY_BUFFER, mySprite.uiVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, spriteList[spriteID]->uiVBO);
 
 			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 4));
@@ -146,7 +168,14 @@ namespace GLF
 		*/
 		void Shutdown()
 		{
-			glDeleteBuffers(1, &mySprite.uiVBO);
+			//glDeleteBuffers(1, &mySprite.uiVBO);
+			for (Sprite* s : spriteList)
+			{
+				glDeleteBuffers(1, &s->uiVBO);
+				delete s;
+			}
+			spriteList.clear();
+
 			glfwTerminate();
 		}
 
@@ -157,7 +186,8 @@ namespace GLF
 		float* orthographicProjection;
 		vec4 backgroundColor;
 
-		Sprite mySprite;
+		//Sprite mySprite;
+		std::vector<Sprite*> spriteList;
 
 		void CreateShaderProgram()
 		{
