@@ -20,26 +20,30 @@ class Sprite
 public:
 	Sprite()
 	{
-		LoadModelVertices();
-		LoadModelUVs();
-		verticesBuffer = new Vertex[modelVertices.size()];
-		textureWidth = 50;
-		textureHeight = 50;
-		textureBPP = 4;
+
+
 	}
 
 	~Sprite()
 	{
 		delete verticesBuffer;
 	}
-	void Initialize(const char* fileName, glm::vec4& a_color, GLuint a_ShaderProgram)
+	void Initialize(const char* fileName, GLuint& a_ShaderProgram, int width, int height)
 	{
+
+		this->width = width;
+		this->height = height;
+		LoadModelVertices();
+		LoadModelUVs();
+		verticesBuffer = new Vertex[modelVertices.size()];
 		position = glm::vec4();
-		color = a_color;
 		glGenBuffers(1, &uiVBO);
 		glGenBuffers(1, &uiIBO);
 		programShader = a_ShaderProgram;
 		UpdateVertices();
+		int textureWidth = 50;
+		int textureHeight = 50;
+		int textureBPP = 4;
 		uiTextureID = loadTexture(fileName, textureWidth, textureHeight, textureBPP);
 	}
 
@@ -128,15 +132,13 @@ private:
 	std::vector<glm::vec4> modelVertices;
 	std::vector<glm::vec2> modelUVs;
 	glm::vec4 position;
-	glm::vec4 color;
 	GLuint uiVBO;
 	GLuint uiIBO;
 	GLuint uiTextureID;
 	GLuint programShader;
 	Vertex* verticesBuffer;
-	int textureWidth;
-	int textureHeight;
-	int textureBPP;
+	int width;
+	int height;
 
 	void UpdateVBO()
 	{
@@ -182,15 +184,12 @@ private:
 			verticesBuffer[i].fPositions[1] = modelVertices[i].y + position.y;
 			verticesBuffer[i].fPositions[2] = 0;
 			verticesBuffer[i].fPositions[3] = 1;
-			verticesBuffer[i].fColors[0] = color.r;
-			verticesBuffer[i].fColors[1] = color.g;
-			verticesBuffer[i].fColors[2] = color.b;
-			verticesBuffer[i].fColors[3] = color.a;
-			if (modelUVs.size() > 0)
-			{
-				verticesBuffer[i].fUVs[0] = modelUVs[i].x;
-				verticesBuffer[i].fUVs[1] = modelUVs[i].y;
-			}
+			verticesBuffer[i].fColors[0] = 1;
+			verticesBuffer[i].fColors[1] = 1;
+			verticesBuffer[i].fColors[2] = 1;
+			verticesBuffer[i].fColors[3] = 0;
+			verticesBuffer[i].fUVs[0] = modelUVs[i].x;
+			verticesBuffer[i].fUVs[1] = modelUVs[i].y;
 		}
 		UpdateVBO();
 		UpdateIBO();
@@ -225,8 +224,8 @@ private:
 	}
 	void LoadModelVertices()
 	{
-		int width = 500;
-		int height = 500;
+		//int width = 500;
+		//int height = 500;
 		float hWidth = width * .5;
 		float hHeight = height * .5;
 		float posX = 1024 * .5;

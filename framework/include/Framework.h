@@ -63,7 +63,7 @@ namespace GLF
 
 		void CreateSprite(const char* a_fileName, int a_width, int a_height)
 		{
-			mySprite.Initialize(a_fileName, vec4(1, 1, 1, 1), uiProgramTextured);
+			mySprite.Initialize(a_fileName, uiProgramTextured, a_width, a_height);
 		}
 
 		void MoveSprite(const vec4& a_position)

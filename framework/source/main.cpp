@@ -15,7 +15,7 @@ int main()
 	}
 
 	//TODO:implement width and height params to sprite class constructor or init
-	fk.CreateSprite(".\\resources\\images\\lobo.png", 500, 500);
+	fk.CreateSprite(".\\resources\\images\\lobo.png", 250, 250);
 	fk.MoveSprite(vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1));
 
 	do
