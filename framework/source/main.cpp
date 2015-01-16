@@ -22,7 +22,7 @@ int main()
 		return -1;
 	}
 
-	const uint mySprite = fk.CreateSprite(".\\resources\\images\\lobo.png", 250, 250);
+	const uint mySprite = fk.CreateSprite(".\\resources\\images\\lobo2.png", 250, 250);
 	const uint sprite2 = fk.CreateSprite(".\\resources\\images\\lobo.png", 250, 250);
 
 	glm::vec4 spritePosition = vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .25, 0, 1);
