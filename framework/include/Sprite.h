@@ -38,7 +38,8 @@ public:
 		LoadModelUVs();
 		verticesBuffer = new Vertex[modelVertices.size()];
 		position = glm::vec4();
-		glGenBuffers(1, &uiVBO);
+		//glGenBuffers(1, &uiVBO);
+		//this->uiVBO = VBO;
 		programShader = a_ShaderProgram;
 		UpdateVertices();
 
@@ -48,11 +49,6 @@ public:
 	{
 		position = a_position;
 		UpdateVertices();
-	}
-
-	void CleanUp()
-	{
-		glDeleteBuffers(1, &uiVBO);
 	}
 
 	void Update(GLFWwindow* windowHandle)
@@ -98,31 +94,6 @@ public:
 		}
 	}
 
-	void Draw(GLuint uniformLocationID, float* orthoProjection)
-	{
-		glUseProgram(programShader);
-
-		//send ortho projection info to shader
-		glUniformMatrix4fv(uniformLocationID, 1, GL_FALSE, orthoProjection);
-
-		//enable vertex array state
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
-
-		glBindTexture(GL_TEXTURE_2D, uiTextureID);
-		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 4));
-		//now we have UVs to worry about, we need to send that info to the graphics card too
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 8));
-
-		glDrawArrays(GL_QUADS, 0, sizeof(Vertex));
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
 	GLuint uiTextureID;
 	GLuint uiVBO;
 	Vertex* verticesBuffer;
@@ -154,7 +125,6 @@ private:
 			verticesBuffer[i].fUVs[1] = modelUVs[i].y;
 		}
 	}
-
 
 	void LoadModelVertices()
 	{

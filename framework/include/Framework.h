@@ -51,7 +51,7 @@ namespace GLF
 
 			CreateShaderProgram();
 
-			IDTexture = glGetUniformLocation(uiProgramTextured, "MVP");
+			IDTexture = glGetUniformLocation(shaderProgram, "MVP");
 			orthographicProjection = getOrtho(0, MNF::Globals::SCREEN_WIDTH, 0, MNF::Globals::SCREEN_HEIGHT, 0, 100);
 			backgroundColor = a_backgroundColor;
 
@@ -61,7 +61,8 @@ namespace GLF
 
 		void CreateSprite(char* a_fileName, int a_width, int a_height)
 		{
-			mySprite.Initialize(uiProgramTextured, a_width, a_height);
+			glGenBuffers(1, &mySprite.uiVBO);
+			mySprite.Initialize(shaderProgram, a_width, a_height);
 			int textureWidth = 50;
 			int textureHeight = 50;
 			int textureBPP = 4;
@@ -101,12 +102,34 @@ namespace GLF
 
 		void DrawSprite()
 		{
-			mySprite.Draw(IDTexture, orthographicProjection);
+			glUseProgram(shaderProgram);
+
+			//send ortho projection info to shader
+			glUniformMatrix4fv(IDTexture, 1, GL_FALSE, orthographicProjection);
+
+			//enable vertex array state
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+
+			glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
+			glBindBuffer(GL_ARRAY_BUFFER, mySprite.uiVBO);
+
+			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 4));
+			//now we have UVs to worry about, we need to send that info to the graphics card too
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 8));
+
+			glDrawArrays(GL_QUADS, 0, sizeof(Vertex));
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			//mySprite.Draw(shaderProgram, IDTexture, orthographicProjection);
 		}
 
 		GLuint GetShaderProgram()
 		{
-			return uiProgramTextured;
+			return shaderProgram;
 		}
 
 		GLuint GetShaderMVP()
@@ -124,12 +147,13 @@ namespace GLF
 		*/
 		void Shutdown()
 		{
+			glDeleteBuffers(1, &mySprite.uiVBO);
 			glfwTerminate();
 		}
 
 	private:
 		GLFWwindow* windowHandle;
-		GLuint uiProgramTextured;
+		GLuint shaderProgram;
 		GLuint IDTexture;
 		float* orthographicProjection;
 		vec4 backgroundColor;
@@ -138,7 +162,7 @@ namespace GLF
 
 		void CreateShaderProgram()
 		{
-			uiProgramTextured = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\TexturedFragmentShader.glsl");
+			shaderProgram = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\TexturedFragmentShader.glsl");
 		}
 
 		GLuint CreateShader(GLenum a_ShaderType, const char* a_ShaderFile)
