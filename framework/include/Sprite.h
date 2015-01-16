@@ -32,18 +32,18 @@ public:
 	{
 		delete verticesBuffer;
 	}
-	void Initialize(glm::vec4& a_position, glm::vec4& a_color, GLuint a_ShaderProgram)
+	void Initialize(const char* fileName, glm::vec4& a_color, GLuint a_ShaderProgram)
 	{
-		position = a_position;
+		position = glm::vec4();
 		color = a_color;
 		glGenBuffers(1, &uiVBO);
 		glGenBuffers(1, &uiIBO);
 		programShader = a_ShaderProgram;
 		UpdateVertices();
-		uiTextureID = loadTexture(".\\resources\\images\\lobo.png", textureWidth, textureHeight, textureBPP);
+		uiTextureID = loadTexture(fileName, textureWidth, textureHeight, textureBPP);
 	}
 
-	void SetPosition(glm::vec4& a_position)
+	void SetPosition(const glm::vec4& a_position)
 	{
 		position = a_position;
 		UpdateVertices();

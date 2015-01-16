@@ -56,9 +56,19 @@ namespace GLF
 			backgroundColor = a_backgroundColor;
 
 			//player.Initialize(vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1), vec4(1, 1, 1, 1), uiProgramTextured);
-			mySprite.Initialize(vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1), vec4(1, 1, 1, 1), uiProgramTextured);
+			//mySprite.Initialize(".\\resources\\images\\lobo.png",vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1), vec4(1, 1, 1, 1), uiProgramTextured);
 			return -1;
 
+		}
+
+		void CreateSprite(const char* a_fileName, int a_width, int a_height)
+		{
+			mySprite.Initialize(a_fileName, vec4(1, 1, 1, 1), uiProgramTextured);
+		}
+
+		void MoveSprite(const vec4& a_position)
+		{
+			mySprite.SetPosition(a_position);
 		}
 
 		bool FrameworkUpdated()
