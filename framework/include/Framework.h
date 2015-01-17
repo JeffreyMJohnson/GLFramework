@@ -8,8 +8,10 @@
 #include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
 #include "SOIL\SOIL.h"
+
 #include "Globals.h"
 #include "Sprite.h"
+
 #include <fstream>
 #include <vector>
 #include <string>
@@ -73,7 +75,7 @@ namespace GLF
 		Create a 2D sprite from given filename with given width and height.
 		returns a unique Sprite ID
 		*/
-		const uint CreateSprite(char* a_fileName, int a_width, int a_height)
+		uint CreateSprite(char* a_fileName, int a_width, int a_height)
 		{	
 			Sprite* newSprite = new Sprite;
 			//glGenBuffers(1, &mySprite.uiVBO);
@@ -94,6 +96,28 @@ namespace GLF
 			return spriteList.size() - 1;
 		}
 
+		uint CreateSprite(char* a_fileName, int a_width, int a_height, glm::vec4& UVCoordinates)
+		{
+			Sprite* newSprite = new Sprite;
+			//glGenBuffers(1, &mySprite.uiVBO);
+			glGenBuffers(1, &newSprite->uiVBO);
+
+			//mySprite.Initialize(shaderProgram, a_width, a_height);
+			newSprite->Initialize(shaderProgram, a_width, a_height);
+
+			int textureWidth = 50;
+			int textureHeight = 50;
+			int textureBPP = 4;
+
+			//mySprite.uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			newSprite->uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			newSprite->SetUVCoordinates(UVCoordinates);
+			spriteList.push_back(newSprite);
+
+			//return the sprites index for accessing later without search
+			return spriteList.size() - 1;
+		}
+
 		void MoveSprite(const uint spriteID, const vec4& a_position)
 		{
 			Sprite* s = spriteList[spriteID];
@@ -102,6 +126,12 @@ namespace GLF
 
 			//UpdateVBO(mySprite.uiVBO, mySprite.verticesBuffer, 4);
 			UpdateVBO(s->uiVBO, s->verticesBuffer, 4);
+		}
+
+		void SetSpriteUVRectangle(const uint spriteID, glm::vec4 newUVRectangle)
+		{
+			spriteList[spriteID]->SetUVCoordinates(newUVRectangle);
+			UpdateVBO(spriteList[spriteID]->uiVBO, spriteList[spriteID]->verticesBuffer, 4);
 		}
 
 		bool FrameworkUpdated()
@@ -324,18 +354,20 @@ namespace GLF
 			//check file exists
 			if (a_pFilename != nullptr)
 			{
-				//read in image data from file
-				unsigned char* pImageData = SOIL_load_image(a_pFilename, &a_iWidth, &a_iHeight, &a_iBPP, SOIL_LOAD_AUTO);
+				////read in image data from file
+				//unsigned char* pImageData = SOIL_load_image(a_pFilename, &a_iWidth, &a_iHeight, &a_iBPP, SOIL_LOAD_AUTO);
 
-				//check for successful read
-				if (pImageData)
-				{
-					//create opengl texture handle
-					uiTextureID = SOIL_create_OGL_texture(pImageData, a_iWidth, a_iHeight, a_iBPP,
-						SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
-					//clear what was read in from file now that it is stored in the handle
-					SOIL_free_image_data(pImageData);
-				}
+				////check for successful read
+				//if (pImageData)
+				//{
+				//	//create opengl texture handle
+				//	uiTextureID = SOIL_create_OGL_texture(pImageData, a_iWidth, a_iHeight, a_iBPP,
+				//		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+				//	//clear what was read in from file now that it is stored in the handle
+				//	SOIL_free_image_data(pImageData);
+				//}
+
+				uiTextureID = SOIL_load_OGL_texture(a_pFilename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT);
 
 				//check for errors
 				if (uiTextureID == 0)

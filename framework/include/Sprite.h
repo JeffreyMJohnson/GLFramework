@@ -30,11 +30,20 @@ public:
 		this->height = height;
 		this->fileName = fileName;
 		LoadModelVertices();
-		LoadModelUVs();
 		verticesBuffer = new Vertex[modelVertices.size()];
 		position = glm::vec4();
+		UVCoordinates = glm::vec4(0, 1, 1, 0);
+		LoadModelUVs();
 		UpdateVertices();
 
+	}
+
+
+	void SetUVCoordinates(glm::vec4& UVRectangle)
+	{
+		UVCoordinates = UVRectangle;
+		LoadModelUVs();
+		UpdateVertices();
 	}
 
 	void SetPosition(const glm::vec4& a_position)
@@ -46,6 +55,7 @@ public:
 	GLuint uiTextureID;
 	GLuint uiVBO;
 	Vertex* verticesBuffer;
+	glm::vec4 UVCoordinates;//rectangle minX, maxY, maxX, minY
 	
 private:
 	std::vector<glm::vec4> modelVertices;
@@ -71,6 +81,7 @@ private:
 			verticesBuffer[i].fUVs[0] = modelUVs[i].x;
 			verticesBuffer[i].fUVs[1] = modelUVs[i].y;
 		}
+
 	}
 
 	void LoadModelVertices()
@@ -84,12 +95,19 @@ private:
 		modelVertices.push_back(glm::vec4(-hWidth, -hHeight, 0, 1));
 	}
 
-	void LoadModelUVs()
-	{
-		modelUVs.push_back(glm::vec2(0, 1));
-		modelUVs.push_back(glm::vec2(1, 1));
-		modelUVs.push_back(glm::vec2(1, 0));
-		modelUVs.push_back(glm::vec2(0, 0));
+	void LoadModelUVs()							//x     y     z    w
+	{								//rectangle minX, maxY, maxX, minY
+		if (modelUVs.size() > 0)
+			modelUVs.clear();
+		modelUVs.push_back(glm::vec2(UVCoordinates.x, UVCoordinates.y));//minX, maxY
+		modelUVs.push_back(glm::vec2(UVCoordinates.z, UVCoordinates.y));//maxX, maxY
+		modelUVs.push_back(glm::vec2(UVCoordinates.z, UVCoordinates.w));//maxX, minY
+		modelUVs.push_back(glm::vec2(UVCoordinates.x, UVCoordinates.w));//minX, minY
+
+		//modelUVs.push_back(glm::vec2(0, 1));
+		//modelUVs.push_back(glm::vec2(1, 1));
+		//modelUVs.push_back(glm::vec2(1, 0));
+		//modelUVs.push_back(glm::vec2(0, 0));
 	}
 };
 
