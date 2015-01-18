@@ -66,7 +66,9 @@ namespace GLF
 			IDTexture = glGetUniformLocation(shaderProgram, "MVP");
 			orthographicProjection = getOrtho(0, MNF::Globals::SCREEN_WIDTH, 0, MNF::Globals::SCREEN_HEIGHT, 0, 100);
 			backgroundColor = a_backgroundColor;
-
+			// Enable blending
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			return -1;
 
 		}
@@ -176,6 +178,9 @@ namespace GLF
 			glEnableVertexAttribArray(1);
 			glEnableVertexAttribArray(2);
 
+
+
+
 			//glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
 			glBindTexture(GL_TEXTURE_2D,spriteList[spriteID]->uiTextureID);
 
@@ -186,6 +191,10 @@ namespace GLF
 			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 4));
 			//now we have UVs to worry about, we need to send that info to the graphics card too
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 8));
+
+			// Enable blending
+			glEnable(GL_BLEND);
+			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			glDrawArrays(GL_QUADS, 0, sizeof(Vertex));
 

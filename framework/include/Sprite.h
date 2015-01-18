@@ -77,7 +77,7 @@ private:
 			verticesBuffer[i].fColors[0] = 1;
 			verticesBuffer[i].fColors[1] = 1;
 			verticesBuffer[i].fColors[2] = 1;
-			verticesBuffer[i].fColors[3] = 0;
+			verticesBuffer[i].fColors[3] = 1;
 			verticesBuffer[i].fUVs[0] = modelUVs[i].x;
 			verticesBuffer[i].fUVs[1] = modelUVs[i].y;
 		}
