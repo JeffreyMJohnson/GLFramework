@@ -8,9 +8,11 @@
 #include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
 #include "SOIL\SOIL.h"
+#include "pugixml\pugixml.hpp"
 
 #include "Globals.h"
 #include "Sprite.h"
+//#include "Text.h"
 
 #include <fstream>
 #include <vector>
@@ -18,6 +20,7 @@
 
 typedef glm::vec4 vec4;
 typedef unsigned int uint;
+typedef unsigned short ushort;
 
 namespace GLF
 {
@@ -29,6 +32,39 @@ namespace GLF
 		A = GLFW_KEY_A,
 		D = GLFW_KEY_D,
 		ESC = GLFW_KEY_ESCAPE
+	};
+
+	//holds info for single character of font sprite sheet
+	struct CharDescriptor
+	{
+		ushort x, y;
+		ushort width, height;
+		float xOffset, yOffset;
+		float xAdvance;
+		ushort page;
+
+		CharDescriptor()
+		{
+			x = 0;
+			y = 0;
+			width = 0;
+			height = 0;
+			xOffset = 0;
+			yOffset = 0;
+			xAdvance = 0;
+			page = 0;
+		}
+	};
+
+	//holds info for entire character set from font sprite sheet and collection of complete characters indexed by ascii code
+	struct Charset
+	{
+		ushort lineHeight;
+		ushort base;
+		ushort scaleW;
+		ushort scaleH;
+		ushort pages;
+		CharDescriptor Chars[256];
 	};
 
 	class Framework
@@ -69,6 +105,14 @@ namespace GLF
 			// Enable blending
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			ParseFont(".\\resources\\fonts\\arial.fnt");
+
+			//load font sprite sheet
+			int textureWidth = 50;
+			int textureHeight = 50;
+			int textureBPP = 4;
+			fontsSpriteSheet = loadTexture(".\\resources\\fonts\\arial_0.png", textureWidth, textureHeight, textureBPP);
 			return -1;
 
 		}
@@ -78,7 +122,7 @@ namespace GLF
 		returns a unique Sprite ID
 		*/
 		uint CreateSprite(char* a_fileName, int a_width, int a_height)
-		{	
+		{
 			Sprite* newSprite = new Sprite;
 			//glGenBuffers(1, &mySprite.uiVBO);
 			glGenBuffers(1, &newSprite->uiVBO);
@@ -93,7 +137,7 @@ namespace GLF
 			//mySprite.uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
 			newSprite->uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
 			spriteList.push_back(newSprite);
-			
+
 			//return the sprites index for accessing later without search
 			return spriteList.size() - 1;
 		}
@@ -134,6 +178,46 @@ namespace GLF
 		{
 			spriteList[spriteID]->SetUVCoordinates(newUVRectangle);
 			UpdateVBO(spriteList[spriteID]->uiVBO, spriteList[spriteID]->verticesBuffer, 4);
+		}
+
+		void DrawString()
+		{
+			const int MAX_CHARS = 256;
+			char* text = "Foo Bar";
+			char letter = 'F';
+			glm::vec4 position(100, 100, 0, 1);
+			int width = 50;
+			int height = 50;
+			//GLuint fontVBO;
+			//Vertex vertBuffer[4];
+
+			//glGenBuffers(1, &fontVBO);
+			glm::vec4 charRect;//left,top,right,bottom
+
+			CharDescriptor ch = charSetDesc.Chars[letter];
+			charRect.x = ch.x;//minX
+			charRect.y = ch.y + ch.height;//maxY
+			charRect.z = ch.x + ch.width;//maxX
+			charRect.w = ch.y;//minY
+
+			//charRect.x = ch.x;//minX
+			//charRect.y = ch.y;
+			//charRect.z = ch.x + ch.width;
+			//charRect.w = ch.y + ch.height;
+
+			//compute destination rect
+			glm::vec4 dstRect;
+			dstRect.x = position.x + ch.xOffset;//left
+			dstRect.y = position.y + ch.yOffset;//top
+			dstRect.z = dstRect.x + ch.width;//right
+			dstRect.w = dstRect.y + ch.height;//bottom
+
+			GLuint charSprite = CreateSprite(".\\resources\\fonts\\arial_0.png", width, height);//, glm::vec4(charRect.x, charRect.y, charRect.z, charRect.w)
+
+
+			MoveSprite(charSprite, position);
+			DrawSprite(charSprite);
+
 		}
 
 		bool FrameworkUpdated()
@@ -182,7 +266,7 @@ namespace GLF
 
 
 			//glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
-			glBindTexture(GL_TEXTURE_2D,spriteList[spriteID]->uiTextureID);
+			glBindTexture(GL_TEXTURE_2D, spriteList[spriteID]->uiTextureID);
 
 			//glBindBuffer(GL_ARRAY_BUFFER, mySprite.uiVBO);
 			glBindBuffer(GL_ARRAY_BUFFER, spriteList[spriteID]->uiVBO);
@@ -218,12 +302,16 @@ namespace GLF
 			glfwTerminate();
 		}
 
+		GLuint fontsSpriteSheet;
+		Charset charSetDesc;
 	private:
 		GLFWwindow* windowHandle;
 		GLuint shaderProgram;
 		GLuint IDTexture;
 		float* orthographicProjection;
 		vec4 backgroundColor;
+
+
 
 		//Sprite mySprite;
 		std::vector<Sprite*> spriteList;
@@ -387,17 +475,65 @@ namespace GLF
 			}
 		}
 
-		void UpdateVBO(GLuint& VBO, Vertex* verticeBuffer, int size )
+		void UpdateVBO(GLuint& VBO, Vertex* verticeBuffer, int size)
 		{
 			//bind vbo
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			//allocate space for vertices on the graphics card
 			//size of buffer needs to be 3 vec4 for vertices and 3 vec4 for 
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * size, verticeBuffer , GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * size, verticeBuffer, GL_STATIC_DRAW);
 
 			//unmap and unbind buffer
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
+
+		void ParseFont(const char* fileName)
+		{
+			using namespace pugi;
+			xml_document doc;
+			//xml_parse_result result = doc.load_file(".\\resources\\fonts\\arial.fnt");
+			xml_parse_result result = doc.load_file(fileName);
+			if (!result)
+			{
+				std::cout << "Error loading font file, verify path (do the slashes need escaping?)\n";
+				std::cout << result.description() << "\n";
+				return;
+			}
+
+			xml_node common = doc.child("font").child("common");
+
+			//load the charset common attributes
+			charSetDesc.lineHeight = std::atoi(common.attribute("lineHeight").value());
+			charSetDesc.base = std::atoi(common.attribute("base").value());
+			charSetDesc.scaleW = std::atoi(common.attribute("scaleW").value());
+			charSetDesc.scaleH = std::atoi(common.attribute("scaleH").value());
+			charSetDesc.pages = std::atoi(common.attribute("pages").value());
+
+
+			//load each char
+			for (xml_node Char : doc.child("font").child("chars").children("char"))
+			{
+				ushort id = std::atoi(Char.attribute("id").value());
+				charSetDesc.Chars[id].x = std::atoi(Char.attribute("x").value());
+				charSetDesc.Chars[id].y = std::atoi(Char.attribute("y").value());
+				charSetDesc.Chars[id].width = std::atoi(Char.attribute("width").value());
+				charSetDesc.Chars[id].height = std::atoi(Char.attribute("height").value());
+				charSetDesc.Chars[id].xOffset = std::atof(Char.attribute("xoffset").value());
+				charSetDesc.Chars[id].yOffset = std::atof(Char.attribute("yoffset").value());
+				charSetDesc.Chars[id].xAdvance = std::atof(Char.attribute("xadvance").value());
+				charSetDesc.Chars[id].page = std::atoi(Char.attribute("page").value());
+			}
+
+		}
+
+		uint LoadFont(const char* filename)
+		{
+			int textureWidth = 50;
+			int textureHeight = 50;
+			int textureBPP = 4;
+			return loadTexture(filename, textureWidth, textureHeight, textureBPP);
+		}
+
 	};
 }
 

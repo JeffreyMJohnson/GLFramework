@@ -1,10 +1,10 @@
 #ifndef _SPRITE_H_
 #define _SPRITE_H_
-#include "GL\glew.h"
-#include "GL\wglew.h"
-#include "GLFW\glfw3.h"
-#include "glm\glm.hpp"
-#include "SOIL\SOIL.h"
+//#include "GL\glew.h"
+//#include "GL\wglew.h"
+//#include "GLFW\glfw3.h"
+//#include "glm\glm.hpp"
+//#include "SOIL\SOIL.h"
 #include <vector>
 #include <iostream>
 
