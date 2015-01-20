@@ -12,7 +12,7 @@
 
 #include "Globals.h"
 #include "Sprite.h"
-//#include "Text.h"
+//#include "FontChar.h"
 
 #include <fstream>
 #include <vector>
@@ -180,43 +180,32 @@ namespace GLF
 			UpdateVBO(spriteList[spriteID]->uiVBO, spriteList[spriteID]->verticesBuffer, 4);
 		}
 
+		void UpdateText()
+		{
+			int sheetWidth = 256;
+			int sheetHeight = 256;
+			GLF::CharDescriptor ch = charSetDesc.Chars['b'];
+
+			//top left origin?
+			float left = ch.x;
+			float top = sheetHeight - (ch.y);//invert origin?
+			float right = left + ch.width;
+			float bottom = sheetHeight - (ch.y + ch.height);//invert origin
+
+			//normalize
+			vec4 charUVs = vec4(
+				left / sheetWidth,
+				top / sheetHeight,
+				right / sheetWidth,
+				bottom / sheetHeight);
+			textCharID = CreateSprite(".\\resources\\fonts\\arial_0.png", ch.width, ch.height, charUVs);
+			glm::vec4 position = vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1);
+			MoveSprite(textCharID, position);
+		}
+		uint textCharID;
 		void DrawString()
 		{
-			const int MAX_CHARS = 256;
-			char* text = "Foo Bar";
-			char letter = 'F';
-			glm::vec4 position(100, 100, 0, 1);
-			int width = 50;
-			int height = 50;
-			//GLuint fontVBO;
-			//Vertex vertBuffer[4];
-
-			//glGenBuffers(1, &fontVBO);
-			glm::vec4 charRect;//left,top,right,bottom
-
-			CharDescriptor ch = charSetDesc.Chars[letter];
-			charRect.x = ch.x;//minX
-			charRect.y = ch.y + ch.height;//maxY
-			charRect.z = ch.x + ch.width;//maxX
-			charRect.w = ch.y;//minY
-
-			//charRect.x = ch.x;//minX
-			//charRect.y = ch.y;
-			//charRect.z = ch.x + ch.width;
-			//charRect.w = ch.y + ch.height;
-
-			//compute destination rect
-			glm::vec4 dstRect;
-			dstRect.x = position.x + ch.xOffset;//left
-			dstRect.y = position.y + ch.yOffset;//top
-			dstRect.z = dstRect.x + ch.width;//right
-			dstRect.w = dstRect.y + ch.height;//bottom
-
-			GLuint charSprite = CreateSprite(".\\resources\\fonts\\arial_0.png", width, height);//, glm::vec4(charRect.x, charRect.y, charRect.z, charRect.w)
-
-
-			MoveSprite(charSprite, position);
-			DrawSprite(charSprite);
+			DrawSprite(textCharID);
 
 		}
 
@@ -524,14 +513,6 @@ namespace GLF
 				charSetDesc.Chars[id].page = std::atoi(Char.attribute("page").value());
 			}
 
-		}
-
-		uint LoadFont(const char* filename)
-		{
-			int textureWidth = 50;
-			int textureHeight = 50;
-			int textureBPP = 4;
-			return loadTexture(filename, textureWidth, textureHeight, textureBPP);
 		}
 
 	};

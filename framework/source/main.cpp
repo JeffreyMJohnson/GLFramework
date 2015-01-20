@@ -30,30 +30,9 @@ int main()
 
 
 	mySprite = fk.CreateSprite(".\\resources\\images\\testTexture.png", 100, 100, animatedUVRecs[currentAnimIndex]);
-	//sprite2 = fk.CreateSprite(".\\resources\\images\\lobo.png", 250, 250);
+	sprite2 = fk.CreateSprite(".\\resources\\images\\lobo.png", 250, 250);
 
-	int sheetWidth = 256;
-	int sheetHeight = 256;
-	GLF::CharDescriptor ch = fk.charSetDesc.Chars['n'];
-	glm::vec4 charRect;
-	//charRect.x = ch.x;//minX
-	//charRect.y = ch.y + ch.height;//maxY
-	//charRect.z = ch.x + ch.width;//maxX
-	//charRect.w = ch.y;//minY
-	
-	//top left origin?
-	float left = ch.x;
-	float top = sheetHeight - (ch.y);//invert origin?
-	float right = left + ch.width;
-	float bottom = sheetHeight - (ch.y + ch.height);//invert origin
-
-	//normalize
-	vec4 charUVs = vec4(
-		left / sheetWidth,
-		top/ sheetHeight,
-		right / sheetWidth,
-		bottom / sheetHeight);
-	sprite2 = fk.CreateSprite(".\\resources\\fonts\\arial_0.png", ch.width, ch.height, charUVs);
+	fk.UpdateText();
 
 	glm::vec4 spritePosition = vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .25, 0, 1);
 	fk.MoveSprite(mySprite, spritePosition);
@@ -71,7 +50,7 @@ int main()
 
 		fk.DrawSprite(mySprite);		
 		fk.DrawSprite(sprite2);
-		//fk.DrawString();
+		fk.DrawString();
 
 		
 	} while (fk.FrameworkUpdated() && !quit);
