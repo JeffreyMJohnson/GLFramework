@@ -32,9 +32,6 @@
     <ClInclude Include="include\Text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\FontChar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\FlatFragmentShader.glsl">

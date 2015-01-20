@@ -109,10 +109,13 @@ namespace GLF
 			ParseFont(".\\resources\\fonts\\arial.fnt");
 
 			//load font sprite sheet
-			int textureWidth = 50;
-			int textureHeight = 50;
-			int textureBPP = 4;
-			fontsSpriteSheet = loadTexture(".\\resources\\fonts\\arial_0.png", textureWidth, textureHeight, textureBPP);
+			//int textureWidth = 50;
+			//int textureHeight = 50;
+			//int textureBPP = 4;
+			fontWidth = 25;
+			fontHeight = 25;
+			fontsSpriteSheet = loadTexture(".\\resources\\fonts\\arial_0.png", fontSheetWidth, fontSheetHeight, fontSheetBPP);
+			LoadFontChars();
 			return -1;
 
 		}
@@ -180,32 +183,50 @@ namespace GLF
 			UpdateVBO(spriteList[spriteID]->uiVBO, spriteList[spriteID]->verticesBuffer, 4);
 		}
 
-		void UpdateText()
+		void UpdateText(char c)
 		{
-			int sheetWidth = 256;
-			int sheetHeight = 256;
-			GLF::CharDescriptor ch = charSetDesc.Chars['b'];
-
-			//top left origin?
-			float left = ch.x;
-			float top = sheetHeight - (ch.y);//invert origin?
-			float right = left + ch.width;
-			float bottom = sheetHeight - (ch.y + ch.height);//invert origin
-
-			//normalize
-			vec4 charUVs = vec4(
-				left / sheetWidth,
-				top / sheetHeight,
-				right / sheetWidth,
-				bottom / sheetHeight);
-			textCharID = CreateSprite(".\\resources\\fonts\\arial_0.png", ch.width, ch.height, charUVs);
 			glm::vec4 position = vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1);
-			MoveSprite(textCharID, position);
+
+			Sprite s = fontChars[c];
+			s.SetPosition(position);
+			UpdateVBO(s.uiVBO, s.verticesBuffer, 4);
+			//DrawString(c);
+			
 		}
-		uint textCharID;
-		void DrawString()
+		void DrawString(char a_char)
 		{
-			DrawSprite(textCharID);
+			glUseProgram(shaderProgram);
+
+			//send ortho projection info to shader
+			glUniformMatrix4fv(IDTexture, 1, GL_FALSE, orthographicProjection);
+
+			//enable vertex array state
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+
+
+
+
+			//glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
+			glBindTexture(GL_TEXTURE_2D, fontChars[a_char].uiTextureID);
+
+			//glBindBuffer(GL_ARRAY_BUFFER, mySprite.uiVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, fontChars[a_char].uiVBO);
+
+			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 4));
+			//now we have UVs to worry about, we need to send that info to the graphics card too
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 8));
+
+			// Enable blending
+			glEnable(GL_BLEND);
+			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glDrawArrays(GL_QUADS, 0, sizeof(Vertex));
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 		}
 
@@ -292,7 +313,14 @@ namespace GLF
 		}
 
 		GLuint fontsSpriteSheet;
+		int fontSheetWidth;
+		int fontSheetHeight;
+		int fontSheetBPP;
 		Charset charSetDesc;
+		uint size = 256;
+		Sprite fontChars[256];
+		int fontWidth;
+		int fontHeight;
 	private:
 		GLFWwindow* windowHandle;
 		GLuint shaderProgram;
@@ -440,20 +468,20 @@ namespace GLF
 			//check file exists
 			if (a_pFilename != nullptr)
 			{
-				////read in image data from file
-				//unsigned char* pImageData = SOIL_load_image(a_pFilename, &a_iWidth, &a_iHeight, &a_iBPP, SOIL_LOAD_AUTO);
+				//read in image data from file
+				unsigned char* pImageData = SOIL_load_image(a_pFilename, &a_iWidth, &a_iHeight, &a_iBPP, SOIL_LOAD_AUTO);
 
-				////check for successful read
-				//if (pImageData)
-				//{
-				//	//create opengl texture handle
-				//	uiTextureID = SOIL_create_OGL_texture(pImageData, a_iWidth, a_iHeight, a_iBPP,
-				//		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
-				//	//clear what was read in from file now that it is stored in the handle
-				//	SOIL_free_image_data(pImageData);
-				//}
+				//check for successful read
+				if (pImageData)
+				{
+					//create opengl texture handle
+					uiTextureID = SOIL_create_OGL_texture(pImageData, a_iWidth, a_iHeight, a_iBPP,
+						SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+					//clear what was read in from file now that it is stored in the handle
+					SOIL_free_image_data(pImageData);
+				}
 
-				uiTextureID = SOIL_load_OGL_texture(a_pFilename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT);
+				//uiTextureID = SOIL_load_OGL_texture(a_pFilename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT);
 
 				//check for errors
 				if (uiTextureID == 0)
@@ -515,6 +543,78 @@ namespace GLF
 
 		}
 
+		void LoadFontChars()
+		{
+
+			/*
+						Sprite* newSprite = new Sprite;
+			//glGenBuffers(1, &mySprite.uiVBO);
+			glGenBuffers(1, &newSprite->uiVBO);
+
+			//mySprite.Initialize(shaderProgram, a_width, a_height);
+			newSprite->Initialize(shaderProgram, a_width, a_height);
+
+			int textureWidth = 50;
+			int textureHeight = 50;
+			int textureBPP = 4;
+
+			//mySprite.uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			newSprite->uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			newSprite->SetUVCoordinates(UVCoordinates);
+			spriteList.push_back(newSprite);
+
+			//return the sprites index for accessing later without search
+			return spriteList.size() - 1;
+
+			//top left origin?
+			float left = ch.x;
+			float top = sheetHeight - (ch.y);//invert origin?
+			float right = left + ch.width;
+			float bottom = sheetHeight - (ch.y + ch.height);//invert origin
+
+			//normalize
+			vec4 charUVs = vec4(
+			left / sheetWidth,
+			top / sheetHeight,
+			right / sheetWidth,
+			bottom / sheetHeight);
+			textCharID = CreateSprite(".\\resources\\fonts\\arial_0.png", ch.width, ch.height, charUVs);
+			glm::vec4 position = vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1);
+			MoveSprite(textCharID, position);
+
+			*/
+			for (int i = 0; i < 256; i++)
+			{
+				CharDescriptor ch = charSetDesc.Chars[i];
+				if (ch.height > 0)
+				{
+					Sprite fontChar;
+					glGenBuffers(1, &fontChar.uiVBO);
+
+					fontChar.Initialize(shaderProgram, fontWidth, fontHeight);
+					fontChar.uiTextureID = fontsSpriteSheet;
+
+					//top left origin!
+					float left = ch.x;
+					float top = fontSheetHeight - ch.y;//flip the y origin
+					float right = ch.x + ch.width;
+					float bottom = fontSheetHeight - (ch.y + ch.height);//flip the y origin
+
+					//normalize the UVs
+					glm::vec4 UVs(
+						left / fontSheetWidth,
+						top / fontSheetHeight,
+						right / fontSheetWidth,
+						bottom / fontSheetHeight);
+
+					fontChar.SetUVCoordinates(UVs);
+					fontChars[i] = fontChar;
+				}
+
+			}
+
+			
+		}
 	};
 }
 

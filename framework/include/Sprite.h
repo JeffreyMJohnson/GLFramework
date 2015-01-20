@@ -21,7 +21,7 @@ public:
 
 	~Sprite()
 	{
-		delete verticesBuffer;
+		//delete verticesBuffer;
 	}
 	void Initialize(GLuint& a_ShaderProgram, int width, int height)
 	{
