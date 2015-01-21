@@ -217,13 +217,13 @@ namespace GLF
 		std::vector<uint> charList;
 		void CreateText(std::string text)
 		{
-			glm::vec4 currentPosition = glm::vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .66, 0, 1);
+			glm::vec4 currentPosition = glm::vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * 0, 0, 1);
 			for (std::string::iterator it = text.begin(); it != text.end(); it++)
 			{
 				uint ch = CreateSprite(fontsSpriteSheet, myFont.Chars[*it].width, myFont.Chars[*it].height, myFont.Chars[*it].UV);
 				if (it == text.begin())
 				{
-					
+					currentPosition += glm::vec4(myFont.Chars[*it].width * -.5, myFont.Chars[*it].height * .5, 0, 0);
 				}
 				else
 				{
