@@ -12,7 +12,7 @@
 
 #include "Globals.h"
 #include "Sprite.h"
-//#include "FontChar.h"
+#include "Font.h"
 
 #include <fstream>
 #include <vector>
@@ -35,37 +35,37 @@ namespace GLF
 	};
 
 	//holds info for single character of font sprite sheet
-	struct CharDescriptor
-	{
-		ushort x, y;
-		ushort width, height;
-		float xOffset, yOffset;
-		float xAdvance;
-		ushort page;
+	//struct CharDescriptor
+	//{
+	//	ushort x, y;
+	//	ushort width, height;
+	//	float xOffset, yOffset;
+	//	float xAdvance;
+	//	ushort page;
 
-		CharDescriptor()
-		{
-			x = 0;
-			y = 0;
-			width = 0;
-			height = 0;
-			xOffset = 0;
-			yOffset = 0;
-			xAdvance = 0;
-			page = 0;
-		}
-	};
+	//	CharDescriptor()
+	//	{
+	//		x = 0;
+	//		y = 0;
+	//		width = 0;
+	//		height = 0;
+	//		xOffset = 0;
+	//		yOffset = 0;
+	//		xAdvance = 0;
+	//		page = 0;
+	//	}
+	//};
 
-	//holds info for entire character set from font sprite sheet and collection of complete characters indexed by ascii code
-	struct Charset
-	{
-		ushort lineHeight;
-		ushort base;
-		ushort scaleW;
-		ushort scaleH;
-		ushort pages;
-		CharDescriptor Chars[256];
-	};
+	////holds info for entire character set from font sprite sheet and collection of complete characters indexed by ascii code
+	//struct Charset
+	//{
+	//	ushort lineHeight;
+	//	ushort base;
+	//	ushort scaleW;
+	//	ushort scaleH;
+	//	ushort pages;
+	//	CharDescriptor Chars[256];
+	//};
 
 	class Framework
 	{
@@ -106,7 +106,7 @@ namespace GLF
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			ParseFont(".\\resources\\fonts\\arial.fnt");
+			//ParseFont(".\\resources\\fonts\\arial.fnt");
 
 			//load font sprite sheet
 			//int textureWidth = 50;
@@ -115,7 +115,8 @@ namespace GLF
 			fontWidth = 25;
 			fontHeight = 25;
 			fontsSpriteSheet = loadTexture(".\\resources\\fonts\\arial_0.png", fontSheetWidth, fontSheetHeight, fontSheetBPP);
-			LoadFontChars();
+			//LoadFontChars();
+			myFont.Init(".\\resources\\fonts\\arial.fnt");
 			return -1;
 
 		}
@@ -158,8 +159,32 @@ namespace GLF
 			int textureHeight = 50;
 			int textureBPP = 4;
 
+
 			//mySprite.uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
 			newSprite->uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			newSprite->SetUVCoordinates(UVCoordinates);
+			spriteList.push_back(newSprite);
+
+			//return the sprites index for accessing later without search
+			return spriteList.size() - 1;
+		}
+
+		uint CreateSprite(uint textureID, int a_width, int a_height, glm::vec4& UVCoordinates)
+		{
+			Sprite* newSprite = new Sprite;
+			//glGenBuffers(1, &mySprite.uiVBO);
+			glGenBuffers(1, &newSprite->uiVBO);
+
+			//mySprite.Initialize(shaderProgram, a_width, a_height);
+			newSprite->Initialize(shaderProgram, a_width, a_height);
+
+			int textureWidth = 50;
+			int textureHeight = 50;
+			int textureBPP = 4;
+
+
+			//mySprite.uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			newSprite->uiTextureID = textureID;
 			newSprite->SetUVCoordinates(UVCoordinates);
 			spriteList.push_back(newSprite);
 
@@ -183,440 +208,450 @@ namespace GLF
 			UpdateVBO(spriteList[spriteID]->uiVBO, spriteList[spriteID]->verticesBuffer, 4);
 		}
 
-		void DrawString(const char* text, glm::vec4 a_position)
+		void DrawString(std::string text&, glm::vec4 a_position)
 		{
-			while (*text)
-			{
-				DrawChar(*text, a_position);
-				a_position += glm::vec4(charSetDesc.Chars[*text].xAdvance * 1.5, 0, 0, 0);
-				text++;
-			}
+			glm::vec4 currentPosition = a_position;
 			
 		}
-		void DrawChar(char a_char, glm::vec4 position)
+
+		std::vector<uint> charList;
+		void CreateText(const std::string text)
 		{
-			Sprite s = fontChars[a_char];
-			s.SetPosition(position);
-			UpdateVBO(s.uiVBO, s.verticesBuffer, 4);
-
-			glUseProgram(shaderProgram);
-
-			//send ortho projection info to shader
-			glUniformMatrix4fv(IDTexture, 1, GL_FALSE, orthographicProjection);
-
-			//enable vertex array state
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glEnableVertexAttribArray(2);
-
-
-
-
-			//glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
-			glBindTexture(GL_TEXTURE_2D, fontChars[a_char].uiTextureID);
-
-			//glBindBuffer(GL_ARRAY_BUFFER, mySprite.uiVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, fontChars[a_char].uiVBO);
-
-			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 4));
-			//now we have UVs to worry about, we need to send that info to the graphics card too
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 8));
-
-			// Enable blending
-			glEnable(GL_BLEND);
-			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			glDrawArrays(GL_QUADS, 0, sizeof(Vertex));
-
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-
-		}
-
-		bool FrameworkUpdated()
-		{
-			if (glfwWindowShouldClose(windowHandle))
+			for (const std::string::iterator it = text.begin(); it != text.end(); it++)
 			{
-				return false;
+
+				//uint ch = CreateSprite(fontsSpriteSheet, 20, 20, myFont.Chars[*it].UV);
+				uint ch = CreateSprite(".\\resources\\fonts\\arial_0.png", 20, 20, myFont.Chars[*it].UV);
+				charList.push_back(ch);
 			}
 
-			glfwSwapBuffers(windowHandle);
-
-			//poll for and process events
-			glfwPollEvents();
-			return true;
 		}
+			//void DrawChar(char a_char, glm::vec4 position)
+			//{
+			//	FontChar ch = myFont.Chars[a_char];
+			//	uint spriteID = CreateSprite(myFont.fontSpriteSheetTextureID, 20, 20, ch.UV);
+			//	MoveSprite(spriteID, position);
+			//	//UpdateVBO(s.uiVBO, s.verticesBuffer, 4);
+			//	DrawSprite(spriteID);
+			//	//glUseProgram(shaderProgram);
 
-		void SetBackgroundColor(const vec4 a_color)
-		{
-			backgroundColor = a_color;
-		}
+			//	////send ortho projection info to shader
+			//	//glUniformMatrix4fv(IDTexture, 1, GL_FALSE, orthographicProjection);
 
-		bool IsKeyPressed(KEY_CODE key)
-		{
-			return glfwGetKey(windowHandle, key);
-		}
-
-		void ClearScreen()
-		{
-			//glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-			glClear(GL_COLOR_BUFFER_BIT);
-		}
-
-		void DrawSprite(const uint spriteID)
-		{
-			glUseProgram(shaderProgram);
-
-			//send ortho projection info to shader
-			glUniformMatrix4fv(IDTexture, 1, GL_FALSE, orthographicProjection);
-
-			//enable vertex array state
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glEnableVertexAttribArray(2);
+			//	////enable vertex array state
+			//	//glEnableVertexAttribArray(0);
+			//	//glEnableVertexAttribArray(1);
+			//	//glEnableVertexAttribArray(2);
 
 
 
 
-			//glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
-			glBindTexture(GL_TEXTURE_2D, spriteList[spriteID]->uiTextureID);
+			//	////glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
+			//	//glBindTexture(GL_TEXTURE_2D, fontChars[a_char].uiTextureID);
 
-			//glBindBuffer(GL_ARRAY_BUFFER, mySprite.uiVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, spriteList[spriteID]->uiVBO);
+			//	////glBindBuffer(GL_ARRAY_BUFFER, mySprite.uiVBO);
+			//	//glBindBuffer(GL_ARRAY_BUFFER, fontChars[a_char].uiVBO);
 
-			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 4));
-			//now we have UVs to worry about, we need to send that info to the graphics card too
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 8));
+			//	//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+			//	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 4));
+			//	////now we have UVs to worry about, we need to send that info to the graphics card too
+			//	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 8));
 
-			// Enable blending
-			glEnable(GL_BLEND);
-			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			//	//// Enable blending
+			//	//glEnable(GL_BLEND);
+			//	////glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			glDrawArrays(GL_QUADS, 0, sizeof(Vertex));
+			//	//glDrawArrays(GL_QUADS, 0, sizeof(Vertex));
 
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
+			//	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+			//	//glBindTexture(GL_TEXTURE_2D, 0);
 
-		/**
-		This should be called prior exiting program
-		*/
-		void Shutdown()
-		{
-			//glDeleteBuffers(1, &mySprite.uiVBO);
-			for (Sprite* s : spriteList)
+			//}
+
+			bool FrameworkUpdated()
 			{
-				glDeleteBuffers(1, &s->uiVBO);
-				delete s;
-			}
-			spriteList.clear();
-
-			glfwTerminate();
-		}
-
-		GLuint fontsSpriteSheet;
-		int fontSheetWidth;
-		int fontSheetHeight;
-		int fontSheetBPP;
-		Charset charSetDesc;
-		uint size = 256;
-		Sprite fontChars[256];
-		int fontWidth;
-		int fontHeight;
-	private:
-		GLFWwindow* windowHandle;
-		GLuint shaderProgram;
-		GLuint IDTexture;
-		float* orthographicProjection;
-		vec4 backgroundColor;
-
-
-
-		//Sprite mySprite;
-		std::vector<Sprite*> spriteList;
-
-		void CreateShaderProgram()
-		{
-			shaderProgram = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\TexturedFragmentShader.glsl");
-		}
-
-		GLuint CreateShader(GLenum a_ShaderType, const char* a_ShaderFile)
-		{
-			std::string shaderCode;
-			//open shader file
-			std::ifstream shaderStream(a_ShaderFile);
-			//if that worked ok, load file line by line
-			if (shaderStream.is_open())
-			{
-				std::string line = "";
-				while (std::getline(shaderStream, line))
+				if (glfwWindowShouldClose(windowHandle))
 				{
-					shaderCode += "\n" + line;
-				}
-				shaderStream.close();
-			}
-
-			//convert to cstring
-			char const* shaderSourcePointer = shaderCode.c_str();
-
-			//create shader ID
-			GLuint shader = glCreateShader(a_ShaderType);
-			//load source code
-			glShaderSource(shader, 1, &shaderSourcePointer, NULL);
-
-			//compile shader
-			glCompileShader(shader);
-
-			//check for errors
-			GLint status;
-			glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-			if (status == GL_FALSE)
-			{
-				GLint infoLogLength;
-				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
-
-				GLchar* infoLog = new GLchar[infoLogLength + 1];
-				glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
-
-				const char* shaderType = NULL;
-				switch (a_ShaderType)
-				{
-				case GL_VERTEX_SHADER:
-					shaderType = "vertex";
-					break;
-				case GL_FRAGMENT_SHADER:
-					shaderType = "fragment";
-					break;
+					return false;
 				}
 
-				fprintf(stderr, "Compile failure in %s shader:\n%s\n", shaderType, infoLog);
-				delete[] infoLog;
+				glfwSwapBuffers(windowHandle);
+
+				//poll for and process events
+				glfwPollEvents();
+				return true;
 			}
 
-			return shader;
-
-		}
-
-		GLuint CreateProgram(const char* a_vertex, const char* a_frag)
-		{
-
-			std::vector<GLuint> shaderList;
-
-			shaderList.push_back(CreateShader(GL_VERTEX_SHADER, a_vertex));
-			shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, a_frag));
-
-			//create shader program ID
-			GLuint program = glCreateProgram();
-
-			//attach shaders
-			for (auto shader = shaderList.begin(); shader != shaderList.end(); shader++)
+			void SetBackgroundColor(const vec4 a_color)
 			{
-				glAttachShader(program, *shader);
+				backgroundColor = a_color;
 			}
 
-			//link program
-			glLinkProgram(program);
-
-			//check for link errors and output them
-			GLint status;
-			glGetProgramiv(program, GL_LINK_STATUS, &status);
-			if (status == GL_FALSE)
+			bool IsKeyPressed(KEY_CODE key)
 			{
-				GLint infoLogLength;
-				glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
-
-				GLchar* infoLog = new GLchar[infoLogLength + 1];
-				glGetProgramInfoLog(program, infoLogLength, NULL, infoLog);
-
-				fprintf(stderr, "Linker failure: %s\n", infoLog);
-				delete[] infoLog;
+				return glfwGetKey(windowHandle, key);
 			}
 
-			for (auto shader = shaderList.begin(); shader != shaderList.end(); shader++)
+			void ClearScreen()
 			{
-				glDetachShader(program, *shader);
-				glDeleteShader(*shader);
+				//glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+				glClear(GL_COLOR_BUFFER_BIT);
 			}
-			return program;
-		}
 
-		float* getOrtho(float left, float right, float bottom, float top, float a_fNear, float a_fFar)
-		{
-			//to correspond with mat4 in the shader
-			//ideally this function would be part of your matrix class
-			//however I wasn't willing to write your matrix class for you just to show you this
-			//so here we are in array format!
-			//add this to your matrix class as a challenge if you like!
-			float* toReturn = new float[12];
-			toReturn[0] = 2.0 / (right - left);;
-			toReturn[1] = toReturn[2] = toReturn[3] = toReturn[4] = 0;
-			toReturn[5] = 2.0 / (top - bottom);
-			toReturn[6] = toReturn[7] = toReturn[8] = toReturn[9] = 0;
-			toReturn[10] = 2.0 / (a_fFar - a_fNear);
-			toReturn[11] = 0;
-			toReturn[12] = -1 * ((right + left) / (right - left));
-			toReturn[13] = -1 * ((top + bottom) / (top - bottom));
-			toReturn[14] = -1 * ((a_fFar + a_fNear) / (a_fFar - a_fNear));
-			toReturn[15] = 1;
-			return toReturn;
-		}
-
-		unsigned int loadTexture(const char* a_pFilename, int & a_iWidth, int & a_iHeight, int & a_iBPP)
-		{
-			unsigned int uiTextureID = 0;
-			//check file exists
-			if (a_pFilename != nullptr)
+			void DrawSprite(const uint spriteID)
 			{
-				//read in image data from file
-				unsigned char* pImageData = SOIL_load_image(a_pFilename, &a_iWidth, &a_iHeight, &a_iBPP, SOIL_LOAD_AUTO);
+				glUseProgram(shaderProgram);
 
-				//check for successful read
-				if (pImageData)
+				//send ortho projection info to shader
+				glUniformMatrix4fv(IDTexture, 1, GL_FALSE, orthographicProjection);
+
+				//enable vertex array state
+				glEnableVertexAttribArray(0);
+				glEnableVertexAttribArray(1);
+				glEnableVertexAttribArray(2);
+
+
+
+
+				//glBindTexture(GL_TEXTURE_2D, mySprite.uiTextureID);
+				glBindTexture(GL_TEXTURE_2D, spriteList[spriteID]->uiTextureID);
+
+				//glBindBuffer(GL_ARRAY_BUFFER, mySprite.uiVBO);
+				glBindBuffer(GL_ARRAY_BUFFER, spriteList[spriteID]->uiVBO);
+
+				glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+				glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 4));
+				//now we have UVs to worry about, we need to send that info to the graphics card too
+				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 8));
+
+				// Enable blending
+				glEnable(GL_BLEND);
+				//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+				glDrawArrays(GL_QUADS, 0, sizeof(Vertex));
+
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+
+			/**
+			This should be called prior exiting program
+			*/
+			void Shutdown()
+			{
+				//glDeleteBuffers(1, &mySprite.uiVBO);
+				for (Sprite* s : spriteList)
 				{
-					//create opengl texture handle
-					uiTextureID = SOIL_create_OGL_texture(pImageData, a_iWidth, a_iHeight, a_iBPP,
-						SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
-					//clear what was read in from file now that it is stored in the handle
-					SOIL_free_image_data(pImageData);
+					glDeleteBuffers(1, &s->uiVBO);
+					delete s;
+				}
+				spriteList.clear();
+
+				glfwTerminate();
+			}
+
+			GLuint fontsSpriteSheet;
+			Font myFont;
+			int fontSheetWidth;
+			int fontSheetHeight;
+			int fontSheetBPP;
+			//Charset charSetDesc;
+			uint size = 256;
+			Sprite fontChars[256];
+			int fontWidth;
+			int fontHeight;
+		private:
+			GLFWwindow* windowHandle;
+			GLuint shaderProgram;
+			GLuint IDTexture;
+			float* orthographicProjection;
+			vec4 backgroundColor;
+
+
+
+			//Sprite mySprite;
+			std::vector<Sprite*> spriteList;
+
+			void CreateShaderProgram()
+			{
+				shaderProgram = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\TexturedFragmentShader.glsl");
+			}
+
+			GLuint CreateShader(GLenum a_ShaderType, const char* a_ShaderFile)
+			{
+				std::string shaderCode;
+				//open shader file
+				std::ifstream shaderStream(a_ShaderFile);
+				//if that worked ok, load file line by line
+				if (shaderStream.is_open())
+				{
+					std::string line = "";
+					while (std::getline(shaderStream, line))
+					{
+						shaderCode += "\n" + line;
+					}
+					shaderStream.close();
 				}
 
-				//uiTextureID = SOIL_load_OGL_texture(a_pFilename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT);
+				//convert to cstring
+				char const* shaderSourcePointer = shaderCode.c_str();
+
+				//create shader ID
+				GLuint shader = glCreateShader(a_ShaderType);
+				//load source code
+				glShaderSource(shader, 1, &shaderSourcePointer, NULL);
+
+				//compile shader
+				glCompileShader(shader);
 
 				//check for errors
-				if (uiTextureID == 0)
+				GLint status;
+				glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+				if (status == GL_FALSE)
 				{
-					std::cerr << "SOIL loading error: " << SOIL_last_result() << std::endl;
-				}
-				return uiTextureID;
-			}
-		}
+					GLint infoLogLength;
+					glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-		void UpdateVBO(GLuint& VBO, Vertex* verticeBuffer, int size)
-		{
-			//bind vbo
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			//allocate space for vertices on the graphics card
-			//size of buffer needs to be 3 vec4 for vertices and 3 vec4 for 
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * size, verticeBuffer, GL_STATIC_DRAW);
+					GLchar* infoLog = new GLchar[infoLogLength + 1];
+					glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
 
-			//unmap and unbind buffer
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-		}
+					const char* shaderType = NULL;
+					switch (a_ShaderType)
+					{
+					case GL_VERTEX_SHADER:
+						shaderType = "vertex";
+						break;
+					case GL_FRAGMENT_SHADER:
+						shaderType = "fragment";
+						break;
+					}
 
-		void ParseFont(const char* fileName)
-		{
-			using namespace pugi;
-			xml_document doc;
-			//xml_parse_result result = doc.load_file(".\\resources\\fonts\\arial.fnt");
-			xml_parse_result result = doc.load_file(fileName);
-			if (!result)
-			{
-				std::cout << "Error loading font file, verify path (do the slashes need escaping?)\n";
-				std::cout << result.description() << "\n";
-				return;
-			}
-
-			xml_node common = doc.child("font").child("common");
-
-			//load the charset common attributes
-			charSetDesc.lineHeight = std::atoi(common.attribute("lineHeight").value());
-			charSetDesc.base = std::atoi(common.attribute("base").value());
-			charSetDesc.scaleW = std::atoi(common.attribute("scaleW").value());
-			charSetDesc.scaleH = std::atoi(common.attribute("scaleH").value());
-			charSetDesc.pages = std::atoi(common.attribute("pages").value());
-
-
-			//load each char
-			for (xml_node Char : doc.child("font").child("chars").children("char"))
-			{
-				ushort id = std::atoi(Char.attribute("id").value());
-				charSetDesc.Chars[id].x = std::atoi(Char.attribute("x").value());
-				charSetDesc.Chars[id].y = std::atoi(Char.attribute("y").value());
-				charSetDesc.Chars[id].width = std::atoi(Char.attribute("width").value());
-				charSetDesc.Chars[id].height = std::atoi(Char.attribute("height").value());
-				charSetDesc.Chars[id].xOffset = std::atof(Char.attribute("xoffset").value());
-				charSetDesc.Chars[id].yOffset = std::atof(Char.attribute("yoffset").value());
-				charSetDesc.Chars[id].xAdvance = std::atof(Char.attribute("xadvance").value());
-				charSetDesc.Chars[id].page = std::atoi(Char.attribute("page").value());
-			}
-
-		}
-
-		void LoadFontChars()
-		{
-
-			/*
-						Sprite* newSprite = new Sprite;
-			//glGenBuffers(1, &mySprite.uiVBO);
-			glGenBuffers(1, &newSprite->uiVBO);
-
-			//mySprite.Initialize(shaderProgram, a_width, a_height);
-			newSprite->Initialize(shaderProgram, a_width, a_height);
-
-			int textureWidth = 50;
-			int textureHeight = 50;
-			int textureBPP = 4;
-
-			//mySprite.uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
-			newSprite->uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
-			newSprite->SetUVCoordinates(UVCoordinates);
-			spriteList.push_back(newSprite);
-
-			//return the sprites index for accessing later without search
-			return spriteList.size() - 1;
-
-			//top left origin?
-			float left = ch.x;
-			float top = sheetHeight - (ch.y);//invert origin?
-			float right = left + ch.width;
-			float bottom = sheetHeight - (ch.y + ch.height);//invert origin
-
-			//normalize
-			vec4 charUVs = vec4(
-			left / sheetWidth,
-			top / sheetHeight,
-			right / sheetWidth,
-			bottom / sheetHeight);
-			textCharID = CreateSprite(".\\resources\\fonts\\arial_0.png", ch.width, ch.height, charUVs);
-			glm::vec4 position = vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1);
-			MoveSprite(textCharID, position);
-
-			*/
-			for (int i = 0; i < 256; i++)
-			{
-				CharDescriptor ch = charSetDesc.Chars[i];
-				if (ch.height > 0)
-				{
-					Sprite fontChar;
-					glGenBuffers(1, &fontChar.uiVBO);
-
-					fontChar.Initialize(shaderProgram, fontWidth, fontHeight);
-					fontChar.uiTextureID = fontsSpriteSheet;
-
-					//top left origin!
-					float left = ch.x;
-					float top = fontSheetHeight - ch.y;//flip the y origin
-					float right = ch.x + ch.width;
-					float bottom = fontSheetHeight - (ch.y + ch.height);//flip the y origin
-
-					//normalize the UVs
-					glm::vec4 UVs(
-						left / fontSheetWidth,
-						top / fontSheetHeight,
-						right / fontSheetWidth,
-						bottom / fontSheetHeight);
-
-					fontChar.SetUVCoordinates(UVs);
-					fontChars[i] = fontChar;
+					fprintf(stderr, "Compile failure in %s shader:\n%s\n", shaderType, infoLog);
+					delete[] infoLog;
 				}
 
+				return shader;
+
 			}
 
-			
-		}
-	};
-}
+			GLuint CreateProgram(const char* a_vertex, const char* a_frag)
+			{
+
+				std::vector<GLuint> shaderList;
+
+				shaderList.push_back(CreateShader(GL_VERTEX_SHADER, a_vertex));
+				shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, a_frag));
+
+				//create shader program ID
+				GLuint program = glCreateProgram();
+
+				//attach shaders
+				for (auto shader = shaderList.begin(); shader != shaderList.end(); shader++)
+				{
+					glAttachShader(program, *shader);
+				}
+
+				//link program
+				glLinkProgram(program);
+
+				//check for link errors and output them
+				GLint status;
+				glGetProgramiv(program, GL_LINK_STATUS, &status);
+				if (status == GL_FALSE)
+				{
+					GLint infoLogLength;
+					glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+					GLchar* infoLog = new GLchar[infoLogLength + 1];
+					glGetProgramInfoLog(program, infoLogLength, NULL, infoLog);
+
+					fprintf(stderr, "Linker failure: %s\n", infoLog);
+					delete[] infoLog;
+				}
+
+				for (auto shader = shaderList.begin(); shader != shaderList.end(); shader++)
+				{
+					glDetachShader(program, *shader);
+					glDeleteShader(*shader);
+				}
+				return program;
+			}
+
+			float* getOrtho(float left, float right, float bottom, float top, float a_fNear, float a_fFar)
+			{
+				//to correspond with mat4 in the shader
+				//ideally this function would be part of your matrix class
+				//however I wasn't willing to write your matrix class for you just to show you this
+				//so here we are in array format!
+				//add this to your matrix class as a challenge if you like!
+				float* toReturn = new float[12];
+				toReturn[0] = 2.0 / (right - left);;
+				toReturn[1] = toReturn[2] = toReturn[3] = toReturn[4] = 0;
+				toReturn[5] = 2.0 / (top - bottom);
+				toReturn[6] = toReturn[7] = toReturn[8] = toReturn[9] = 0;
+				toReturn[10] = 2.0 / (a_fFar - a_fNear);
+				toReturn[11] = 0;
+				toReturn[12] = -1 * ((right + left) / (right - left));
+				toReturn[13] = -1 * ((top + bottom) / (top - bottom));
+				toReturn[14] = -1 * ((a_fFar + a_fNear) / (a_fFar - a_fNear));
+				toReturn[15] = 1;
+				return toReturn;
+			}
+
+			unsigned int loadTexture(const char* a_pFilename, int & a_iWidth, int & a_iHeight, int & a_iBPP)
+			{
+				unsigned int uiTextureID = 0;
+				//check file exists
+				if (a_pFilename != nullptr)
+				{
+					////read in image data from file
+					//unsigned char* pImageData = SOIL_load_image(a_pFilename, &a_iWidth, &a_iHeight, &a_iBPP, SOIL_LOAD_AUTO);
+
+					////check for successful read
+					//if (pImageData)
+					//{
+					//	//create opengl texture handle
+					//	uiTextureID = SOIL_create_OGL_texture(pImageData, a_iWidth, a_iHeight, a_iBPP,
+					//		SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+					//	//clear what was read in from file now that it is stored in the handle
+					//	SOIL_free_image_data(pImageData);
+					//}
+
+					uiTextureID = SOIL_load_OGL_texture(a_pFilename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT);
+
+					//check for errors
+					if (uiTextureID == 0)
+					{
+						std::cerr << "SOIL loading error: " << SOIL_last_result() << std::endl;
+					}
+					return uiTextureID;
+				}
+			}
+
+			void UpdateVBO(GLuint& VBO, Vertex* verticeBuffer, int size)
+			{
+				//bind vbo
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				//allocate space for vertices on the graphics card
+				//size of buffer needs to be 3 vec4 for vertices and 3 vec4 for 
+				glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)* size, verticeBuffer, GL_STATIC_DRAW);
+
+				//unmap and unbind buffer
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+			}
+
+			//void ParseFont(const char* fileName)
+			//{
+			//	using namespace pugi;
+			//	xml_document doc;
+			//	//xml_parse_result result = doc.load_file(".\\resources\\fonts\\arial.fnt");
+			//	xml_parse_result result = doc.load_file(fileName);
+			//	if (!result)
+			//	{
+			//		std::cout << "Error loading font file, verify path (do the slashes need escaping?)\n";
+			//		std::cout << result.description() << "\n";
+			//		return;
+			//	}
+
+			//	xml_node common = doc.child("font").child("common");
+
+			//	//load the charset common attributes
+			//	charSetDesc.lineHeight = std::atoi(common.attribute("lineHeight").value());
+			//	charSetDesc.base = std::atoi(common.attribute("base").value());
+			//	charSetDesc.scaleW = std::atoi(common.attribute("scaleW").value());
+			//	charSetDesc.scaleH = std::atoi(common.attribute("scaleH").value());
+			//	charSetDesc.pages = std::atoi(common.attribute("pages").value());
+
+
+			//	//load each char
+			//	for (xml_node Char : doc.child("font").child("chars").children("char"))
+			//	{
+			//		ushort id = std::atoi(Char.attribute("id").value());
+			//		charSetDesc.Chars[id].x = std::atoi(Char.attribute("x").value());
+			//		charSetDesc.Chars[id].y = std::atoi(Char.attribute("y").value());
+			//		charSetDesc.Chars[id].width = std::atoi(Char.attribute("width").value());
+			//		charSetDesc.Chars[id].height = std::atoi(Char.attribute("height").value());
+			//		charSetDesc.Chars[id].xOffset = std::atof(Char.attribute("xoffset").value());
+			//		charSetDesc.Chars[id].yOffset = std::atof(Char.attribute("yoffset").value());
+			//		charSetDesc.Chars[id].xAdvance = std::atof(Char.attribute("xadvance").value());
+			//		charSetDesc.Chars[id].page = std::atoi(Char.attribute("page").value());
+			//	}
+
+			//}
+
+			//void LoadFontChars()
+			//{
+
+			//	/*
+			//				Sprite* newSprite = new Sprite;
+			//	//glGenBuffers(1, &mySprite.uiVBO);
+			//	glGenBuffers(1, &newSprite->uiVBO);
+
+			//	//mySprite.Initialize(shaderProgram, a_width, a_height);
+			//	newSprite->Initialize(shaderProgram, a_width, a_height);
+
+			//	int textureWidth = 50;
+			//	int textureHeight = 50;
+			//	int textureBPP = 4;
+
+			//	//mySprite.uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			//	newSprite->uiTextureID = loadTexture(a_fileName, textureWidth, textureHeight, textureBPP);
+			//	newSprite->SetUVCoordinates(UVCoordinates);
+			//	spriteList.push_back(newSprite);
+
+			//	//return the sprites index for accessing later without search
+			//	return spriteList.size() - 1;
+
+			//	//top left origin?
+			//	float left = ch.x;
+			//	float top = sheetHeight - (ch.y);//invert origin?
+			//	float right = left + ch.width;
+			//	float bottom = sheetHeight - (ch.y + ch.height);//invert origin
+
+			//	//normalize
+			//	vec4 charUVs = vec4(
+			//	left / sheetWidth,
+			//	top / sheetHeight,
+			//	right / sheetWidth,
+			//	bottom / sheetHeight);
+			//	textCharID = CreateSprite(".\\resources\\fonts\\arial_0.png", ch.width, ch.height, charUVs);
+			//	glm::vec4 position = vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1);
+			//	MoveSprite(textCharID, position);
+
+			//	*/
+			//	for (int i = 0; i < 256; i++)
+			//	{
+			//		CharDescriptor ch = charSetDesc.Chars[i];
+			//		if (ch.height > 0)
+			//		{
+			//			Sprite fontChar;
+			//			glGenBuffers(1, &fontChar.uiVBO);
+
+			//			fontChar.Initialize(shaderProgram, fontWidth, fontHeight);
+			//			fontChar.uiTextureID = fontsSpriteSheet;
+
+			//			//top left origin!
+			//			float left = ch.x;
+			//			float top = fontSheetHeight - ch.y;//flip the y origin
+			//			float right = ch.x + ch.width;
+			//			float bottom = fontSheetHeight - (ch.y + ch.height);//flip the y origin
+
+			//			//normalize the UVs
+			//			glm::vec4 UVs(
+			//				left / fontSheetWidth,
+			//				top / fontSheetHeight,
+			//				right / fontSheetWidth,
+			//				bottom / fontSheetHeight);
+
+			//			fontChar.SetUVCoordinates(UVs);
+			//			fontChars[i] = fontChar;
+			//		}
+
+			//	}
+
+			//	
+			//}
+		};
+	}
 
 #endif

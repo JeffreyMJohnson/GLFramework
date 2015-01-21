@@ -72,10 +72,11 @@
     <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\FontChar.h" />
     <ClInclude Include="include\Framework.h" />
     <ClInclude Include="include\Globals.h" />
     <ClInclude Include="include\Sprite.h" />
-    <ClInclude Include="include\Text.h" />
+    <ClInclude Include="include\Font.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\FlatFragmentShader.glsl" />

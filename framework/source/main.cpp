@@ -13,6 +13,7 @@ int currentAnimIndex = 0;
 std::vector<glm::vec4> animatedUVRecs;
 uint mySprite;
 uint sprite2;
+uint aChar;
 int main()
 {
 	float hWidth = (MNF::Globals::SCREEN_WIDTH * .5);
@@ -31,13 +32,18 @@ int main()
 
 	mySprite = fk.CreateSprite(".\\resources\\images\\testTexture.png", 100, 100, animatedUVRecs[currentAnimIndex]);
 	sprite2 = fk.CreateSprite(".\\resources\\images\\lobo.png", 250, 250);
-
+	aChar = fk.CreateSprite(".\\resources\\fonts\\arial_0.png", 20,20, glm::vec4(.48,.79,.54,.70));
+	
 
 	glm::vec4 spritePosition = vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .25, 0, 1);
 	fk.MoveSprite(mySprite, spritePosition);
 
 	glm::vec4 spritePosition2 = vec4(MNF::Globals::SCREEN_WIDTH * .75, MNF::Globals::SCREEN_HEIGHT * .75, 0, 1);
 	fk.MoveSprite(sprite2, spritePosition2);
+
+	glm::vec4 aCharPos = vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1);
+	
+
 
 	do
 	{
@@ -50,9 +56,14 @@ int main()
 		fk.DrawSprite(mySprite);		
 		fk.DrawSprite(sprite2);
 		//fk.DrawChar('H', vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1));
-		fk.DrawString("foo bar", vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1));
+		//fk.DrawString("foo bar", vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1));
+		fk.MoveSprite(aChar, aCharPos);
+		fk.DrawSprite(aChar);
+		fk.MoveSprite(aChar, vec4(MNF::Globals::SCREEN_WIDTH * .25 + 15, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1));
+		fk.DrawSprite(aChar);
 
-		
+		fk.CreateText("foo");
+		fk.DrawString("foo", vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .66, 0, 1));
 	} while (fk.FrameworkUpdated() && !quit);
 
 	fk.Shutdown();
