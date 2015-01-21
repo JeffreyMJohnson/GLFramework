@@ -183,18 +183,22 @@ namespace GLF
 			UpdateVBO(spriteList[spriteID]->uiVBO, spriteList[spriteID]->verticesBuffer, 4);
 		}
 
-		void UpdateText(char c)
+		void DrawString(const char* text, glm::vec4 a_position)
 		{
-			glm::vec4 position = vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1);
-
-			Sprite s = fontChars[c];
-			s.SetPosition(position);
-			UpdateVBO(s.uiVBO, s.verticesBuffer, 4);
-			//DrawString(c);
+			while (*text)
+			{
+				DrawChar(*text, a_position);
+				a_position += glm::vec4(charSetDesc.Chars[*text].xAdvance * 1.5, 0, 0, 0);
+				text++;
+			}
 			
 		}
-		void DrawString(char a_char)
+		void DrawChar(char a_char, glm::vec4 position)
 		{
+			Sprite s = fontChars[a_char];
+			s.SetPosition(position);
+			UpdateVBO(s.uiVBO, s.verticesBuffer, 4);
+
 			glUseProgram(shaderProgram);
 
 			//send ortho projection info to shader
@@ -256,7 +260,7 @@ namespace GLF
 
 		void ClearScreen()
 		{
-			glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+			//glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 
@@ -397,9 +401,6 @@ namespace GLF
 
 		GLuint CreateProgram(const char* a_vertex, const char* a_frag)
 		{
-			//ofstream file;
-			//file.open(a_vertex, ios::in);
-			//cout << file.is_open() << endl;
 
 			std::vector<GLuint> shaderList;
 

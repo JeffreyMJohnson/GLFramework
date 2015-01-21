@@ -32,7 +32,6 @@ int main()
 	mySprite = fk.CreateSprite(".\\resources\\images\\testTexture.png", 100, 100, animatedUVRecs[currentAnimIndex]);
 	sprite2 = fk.CreateSprite(".\\resources\\images\\lobo.png", 250, 250);
 
-	fk.UpdateText('j');
 
 	glm::vec4 spritePosition = vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .25, 0, 1);
 	fk.MoveSprite(mySprite, spritePosition);
@@ -50,7 +49,8 @@ int main()
 
 		fk.DrawSprite(mySprite);		
 		fk.DrawSprite(sprite2);
-		fk.DrawString('j');
+		//fk.DrawChar('H', vec4(MNF::Globals::SCREEN_WIDTH * .5, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1));
+		fk.DrawString("foo bar", vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1));
 
 		
 	} while (fk.FrameworkUpdated() && !quit);
