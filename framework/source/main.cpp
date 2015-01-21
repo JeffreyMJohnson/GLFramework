@@ -62,8 +62,8 @@ int main()
 		fk.MoveSprite(aChar, vec4(MNF::Globals::SCREEN_WIDTH * .25 + 15, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1));
 		fk.DrawSprite(aChar);
 
-		fk.CreateText("foo");
-		fk.DrawString("foo", vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .66, 0, 1));
+		fk.CreateText("foo to the bar");
+		//fk.DrawString("F", vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .66, 0, 1));
 	} while (fk.FrameworkUpdated() && !quit);
 
 	fk.Shutdown();

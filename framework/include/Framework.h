@@ -208,20 +208,32 @@ namespace GLF
 			UpdateVBO(spriteList[spriteID]->uiVBO, spriteList[spriteID]->verticesBuffer, 4);
 		}
 
-		void DrawString(std::string text&, glm::vec4 a_position)
+		void DrawString(std::string text, glm::vec4 a_position)
 		{
 			glm::vec4 currentPosition = a_position;
 			
 		}
 
 		std::vector<uint> charList;
-		void CreateText(const std::string text)
+		void CreateText(std::string text)
 		{
-			for (const std::string::iterator it = text.begin(); it != text.end(); it++)
+			glm::vec4 currentPosition = glm::vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .66, 0, 1);
+			for (std::string::iterator it = text.begin(); it != text.end(); it++)
 			{
-
-				//uint ch = CreateSprite(fontsSpriteSheet, 20, 20, myFont.Chars[*it].UV);
-				uint ch = CreateSprite(".\\resources\\fonts\\arial_0.png", 20, 20, myFont.Chars[*it].UV);
+				uint ch = CreateSprite(fontsSpriteSheet, myFont.Chars[*it].width, myFont.Chars[*it].height, myFont.Chars[*it].UV);
+				if (it == text.begin())
+				{
+					
+				}
+				else
+				{
+					FontChar current = myFont.Chars[*it];
+					FontChar prev = myFont.Chars[*(it - 1)];
+					currentPosition += glm::vec4(current.xAdvance, 0, 0, 0);
+				}
+				
+				//uint ch = CreateSprite(".\\resources\\fonts\\arial_0.png", 20, 20, myFont.Chars[*it].UV);
+				MoveSprite(ch, currentPosition);
 				charList.push_back(ch);
 			}
 
@@ -273,6 +285,14 @@ namespace GLF
 				if (glfwWindowShouldClose(windowHandle))
 				{
 					return false;
+				}
+
+				if (charList.size() > 0)
+				{
+					for (uint ch : charList)
+					{
+						DrawSprite(ch);
+					}
 				}
 
 				glfwSwapBuffers(windowHandle);
