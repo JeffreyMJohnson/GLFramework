@@ -2,7 +2,7 @@
 #define _FRAMEWORK_H_
 
 #include "GL\glew.h"
-#include "GL\wglew.h"
+//#include "GL\wglew.h"
 
 //glew must be included first
 #include "GLFW\glfw3.h"
@@ -217,19 +217,19 @@ namespace GLF
 		std::vector<uint> charList;
 		void CreateText(std::string text)
 		{
-			glm::vec4 currentPosition = glm::vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * 0, 0, 1);
+			glm::vec4 currentPosition = glm::vec4(MNF::Globals::SCREEN_WIDTH * .1, MNF::Globals::SCREEN_HEIGHT * .6, 0, 1);
 			for (std::string::iterator it = text.begin(); it != text.end(); it++)
 			{
 				uint ch = CreateSprite(fontsSpriteSheet, myFont.Chars[*it].width, myFont.Chars[*it].height, myFont.Chars[*it].UV);
 				if (it == text.begin())
 				{
-					currentPosition += glm::vec4(myFont.Chars[*it].width * -.5, myFont.Chars[*it].height * .5, 0, 0);
+					//currentPosition += glm::vec4(myFont.Chars[*it].width * -.5, myFont.Chars[*it].height * .5, 0, 0);
 				}
 				else
 				{
 					FontChar current = myFont.Chars[*it];
 					FontChar prev = myFont.Chars[*(it - 1)];
-					currentPosition += glm::vec4(current.xAdvance, 0, 0, 0);
+					currentPosition += glm::vec4(current.xOffset + prev.xAdvance , 0, 0, 0);
 				}
 				
 				//uint ch = CreateSprite(".\\resources\\fonts\\arial_0.png", 20, 20, myFont.Chars[*it].UV);
@@ -395,6 +395,7 @@ namespace GLF
 			void CreateShaderProgram()
 			{
 				shaderProgram = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\TexturedFragmentShader.glsl");
+				//shaderProgram = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\FlatFragmentShader.glsl");
 			}
 
 			GLuint CreateShader(GLenum a_ShaderType, const char* a_ShaderFile)
