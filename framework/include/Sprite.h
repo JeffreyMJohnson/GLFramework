@@ -45,12 +45,26 @@ public:
 
 	GLuint uiTextureID;
 	GLuint uiVBO;
+	GLuint uiVAO;
+	GLuint shaderProgram;
 	Vertex* verticesBuffer;
-	
+
+	glm::mat4 transform;
+	glm::vec3 translation, scale;
+	float rotZ;
+	glm::vec4 position;
+
+	GLint uniMVP;
+	GLuint uniTranslate;
+
+	glm::mat4 viewMatrix;
+	glm::mat4 projectionMatirx;
+	glm::mat4 modelViewProjectionMatrix;
+
 private:
 	std::vector<glm::vec4> modelVertices;
 	std::vector<glm::vec2> modelUVs;
-	glm::vec4 position;
+	
 	
 	int width;
 	int height;
@@ -58,30 +72,33 @@ private:
 
 	void UpdateVertices()
 	{
-		for (int i = 0; i < modelVertices.size(); i++)
-		{
-			verticesBuffer[i].fPositions[0] = modelVertices[i].x + position.x;
-			verticesBuffer[i].fPositions[1] = modelVertices[i].y + position.y;
-			verticesBuffer[i].fPositions[2] = 0;
-			verticesBuffer[i].fPositions[3] = 1;
-			verticesBuffer[i].fColors[0] = 1;
-			verticesBuffer[i].fColors[1] = 1;
-			verticesBuffer[i].fColors[2] = 1;
-			verticesBuffer[i].fColors[3] = 0;
-			verticesBuffer[i].fUVs[0] = modelUVs[i].x;
-			verticesBuffer[i].fUVs[1] = modelUVs[i].y;
-		}
+		//for (int i = 0; i < modelVertices.size(); i++)
+		//{
+		//	verticesBuffer[i].fPositions[0] = modelVertices[i].x + position.x;
+		//	verticesBuffer[i].fPositions[1] = modelVertices[i].y + position.y;
+		//	verticesBuffer[i].fPositions[2] = 0;
+		//	verticesBuffer[i].fPositions[3] = 1;
+		//	verticesBuffer[i].fColors[0] = 1;
+		//	verticesBuffer[i].fColors[1] = 1;
+		//	verticesBuffer[i].fColors[2] = 1;
+		//	verticesBuffer[i].fColors[3] = 0;
+		//	verticesBuffer[i].fUVs[0] = modelUVs[i].x;
+		//	verticesBuffer[i].fUVs[1] = modelUVs[i].y;
+		//}
 	}
 
 	void LoadModelVertices()
 	{
 		float hWidth = width * .5;
 		float hHeight = height * .5;
+		Vertex v;
 
-		modelVertices.push_back(glm::vec4(-hWidth, hHeight, 0, 1));
-		modelVertices.push_back(glm::vec4(hWidth, hHeight, 0, 1));
-		modelVertices.push_back(glm::vec4(hWidth, -hHeight, 0, 1));
-		modelVertices.push_back(glm::vec4(-hWidth, -hHeight, 0, 1));
+
+		//modelVertices.push_back(glm::vec4(-hWidth, hHeight, 0, 1));
+		//modelVertices.push_back(glm::vec4(hWidth, hHeight, 0, 1));
+		//modelVertices.push_back(glm::vec4(hWidth, -hHeight, 0, 1));
+		//modelVertices.push_back(glm::vec4(-hWidth, -hHeight, 0, 1));
+
 	}
 
 	void LoadModelUVs()
