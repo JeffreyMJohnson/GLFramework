@@ -77,6 +77,7 @@
     <ClInclude Include="include\Globals.h" />
     <ClInclude Include="include\Sprite.h" />
     <ClInclude Include="include\Font.h" />
+    <ClInclude Include="include\Triangle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\FlatFragmentShader.glsl" />

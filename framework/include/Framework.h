@@ -1,22 +1,29 @@
 #ifndef _FRAMEWORK_H_
 #define _FRAMEWORK_H_
-
+//GLEW_STATIC DEFINED IN PROJECT PROPS
 #include "GL\glew.h"
-//#include "GL\wglew.h"
 
 //glew must be included first
 #include "GLFW\glfw3.h"
-#include "glm\glm.hpp"
 #include "SOIL\SOIL.h"
+//GLM_FORCE_PURE DEFINED IN PROJECT PROPS
+#include "glm\glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 #include "pugixml\pugixml.hpp"
 
 #include "Globals.h"
 #include "Sprite.h"
 #include "Font.h"
+#include "Triangle.h"
+
 
 #include <fstream>
 #include <vector>
 #include <string>
+
+
 
 typedef glm::vec4 vec4;
 typedef unsigned int uint;
@@ -70,6 +77,9 @@ namespace GLF
 	class Framework
 	{
 	public:
+		//debug testging
+		Triangle* myTriangle;
+
 		/**
 		Initialize GLFramework
 		params:
@@ -99,8 +109,9 @@ namespace GLF
 
 			CreateShaderProgram();
 
-			IDTexture = glGetUniformLocation(shaderProgram, "MVP");
+			uiMVPLocation = glGetUniformLocation(shaderProgram, "MVP");
 			orthographicProjection = getOrtho(0, MNF::Globals::SCREEN_WIDTH, 0, MNF::Globals::SCREEN_HEIGHT, 0, 100);
+			cameraProjection = glm::ortho(0, MNF::Globals::SCREEN_WIDTH, 0, MNF::Globals::SCREEN_HEIGHT);
 			backgroundColor = a_backgroundColor;
 			// Enable blending
 			glEnable(GL_BLEND);
@@ -117,6 +128,8 @@ namespace GLF
 			fontsSpriteSheet = loadTexture(".\\resources\\fonts\\arial_0.png", fontSheetWidth, fontSheetHeight, fontSheetBPP);
 			//LoadFontChars();
 			myFont.Init(".\\resources\\fonts\\arial.fnt");
+			myTriangle = new Triangle(shaderProgram, windowHandle);
+
 			return -1;
 
 		}
@@ -248,7 +261,7 @@ namespace GLF
 			//	//glUseProgram(shaderProgram);
 
 			//	////send ortho projection info to shader
-			//	//glUniformMatrix4fv(IDTexture, 1, GL_FALSE, orthographicProjection);
+			//	//glUniformMatrix4fv(uiMVPLocation, 1, GL_FALSE, orthographicProjection);
 
 			//	////enable vertex array state
 			//	//glEnableVertexAttribArray(0);
@@ -295,6 +308,9 @@ namespace GLF
 					}
 				}
 
+				myTriangle->Update();
+				myTriangle->Draw();
+
 				glfwSwapBuffers(windowHandle);
 
 				//poll for and process events
@@ -323,7 +339,8 @@ namespace GLF
 				glUseProgram(shaderProgram);
 
 				//send ortho projection info to shader
-				glUniformMatrix4fv(IDTexture, 1, GL_FALSE, orthographicProjection);
+				glUniformMatrix4fv(uiMVPLocation, 1, GL_FALSE, orthographicProjection);
+				//glUniformMatrix4fv(uiMVPLocation, 1, GL_FALSE, glm::value_ptr(cameraProjection));
 
 				//enable vertex array state
 				glEnableVertexAttribArray(0);
@@ -380,11 +397,14 @@ namespace GLF
 			Sprite fontChars[256];
 			int fontWidth;
 			int fontHeight;
+			float* orthographicProjection;
+			glm::mat4 cameraProjection;
+
 		private:
 			GLFWwindow* windowHandle;
 			GLuint shaderProgram;
-			GLuint IDTexture;
-			float* orthographicProjection;
+			GLuint uiMVPLocation;
+			
 			vec4 backgroundColor;
 
 

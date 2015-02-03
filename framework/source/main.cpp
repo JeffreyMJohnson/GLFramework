@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Framework.h"
 
+
 void InputHandling(const uint spriteID, glm::vec4& position, bool& quit);
 void Update();
 
@@ -44,7 +45,6 @@ int main()
 	glm::vec4 aCharPos = vec4(MNF::Globals::SCREEN_WIDTH * .25, MNF::Globals::SCREEN_HEIGHT * .5, 0, 1);
 	
 fk.CreateText("foo bar");
-
 	do
 	{
 		fk.ClearScreen();
