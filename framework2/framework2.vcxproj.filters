@@ -40,5 +40,8 @@
     <ClInclude Include="include\FontChar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\FontManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

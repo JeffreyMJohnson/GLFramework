@@ -36,7 +36,7 @@ struct Sprite
 	glm::vec3 translation, scale;
 	float rotZ;
 	//glm::vec2 position;
-	float width, height;
+	//float width, height;
 
 	GLint uniMVP;
 

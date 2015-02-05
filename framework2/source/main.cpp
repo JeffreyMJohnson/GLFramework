@@ -7,9 +7,9 @@
 
 #include <time.h>
 
-#include "Sprite.h"
+//#include "Sprite.h"
 
-#include "Font.h"
+#include "FontManager.h"
 
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
@@ -42,13 +42,21 @@ int main()
 	s.SetUV(0, 0, .25, .25);
 
 	//work on font
-	font.Init(".\\resources\\fonts\\", "arial.fnt");
-	Sprite text;
-	FontChar ch = font.Chars['F'];
-	//starting spot
-	text.Initialize(ch.width, ch.height, (font.path + font.imageFileName).c_str());
-	text.translation = glm::vec3(200, 200, 0);
-	text.UpdateTransform();
+	FontManager fm;
+	fm.Initialize(".\\resources\\fonts\\", "arial.fnt");
+
+	//font.Init(".\\resources\\fonts\\", "arial.fnt");
+	//Sprite text;
+	//FontChar ch = font.Chars['F'];
+	////starting spot
+	//float textScale = 1;
+	//text.Initialize(ch.width * textScale, ch.height * textScale, (font.path + font.imageFileName).c_str());
+	//text.translation = glm::vec3(200, 200, 0);
+	//text.UpdateTransform();
+
+	//text.SetUV(ch.UV.x, ch.UV.y, ch.UV.z, ch.UV.w);
+
+	//glm::vec3 nextCharPos = glm::vec3(font.Chars['o'].xAdvance + 200, 200, 0);
 
 
 	while (!glfwWindowShouldClose(window))
@@ -61,7 +69,14 @@ int main()
 		s.Update();
 		s.Draw();
 
-		text.Draw();
+		fm.Draw();
+
+		//text.Draw();
+		//ch = font.Chars['o'];
+		//text.SetUV(ch.UV.x, ch.UV.y, ch.UV.z, ch.UV.w);
+		//text.translation = nextCharPos;
+		//text.UpdateTransform();
+		//text.Draw();
 
 		HandleUI(s);
 

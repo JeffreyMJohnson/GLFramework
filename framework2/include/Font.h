@@ -94,39 +94,23 @@ private:
 
 	glm::vec4 CalculateUV(FontChar& ch)
 	{
-		//top left origin
-		float left = ch.fontSheetLocation.x;
-		float top = spriteSheetHeight - ch.fontSheetLocation.y;//invert the y origin
-		float right = left + ch.width;
-		float bottom = spriteSheetHeight - (ch.fontSheetLocation.y + ch.height);//invert y origin
+		float minX = ch.fontSheetLocation.x;
+		float minY = ch.fontSheetLocation.y;
+		float maxX = minX + ch.width;
+		float maxY = minY + ch.height;
 
-		//normalize
 		glm::vec4 result(
-			left / spriteSheetWidth,
-			top / spriteSheetHeight,
-			right / spriteSheetWidth,
-			bottom / spriteSheetHeight);
+			minX / spriteSheetWidth,
+			minY / spriteSheetHeight,
+			maxX / spriteSheetWidth,
+			maxY / spriteSheetHeight);
+
 		return result;
 	}
 
 	unsigned int loadTexture(const char* a_pFilename)
 	{
 		unsigned int uiTextureID = 0;
-		////check file exists
-		//if (a_pFilename != nullptr)
-		//{
-		//	//read in image data from file
-		//	unsigned char* pImageData = SOIL_load_image(a_pFilename, &a_iWidth, &a_iHeight, &a_iBPP, SOIL_LOAD_AUTO);
-
-		//	//check for successful read
-		//	if (pImageData)
-		//	{
-		//		//create opengl texture handle
-		//		uiTextureID = SOIL_create_OGL_texture(pImageData, a_iWidth, a_iHeight, a_iBPP,
-		//			SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
-		//		//clear what was read in from file now that it is stored in the handle
-		//		SOIL_free_image_data(pImageData);
-		//	}
 
 		uiTextureID = SOIL_load_OGL_texture(a_pFilename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT);
 
