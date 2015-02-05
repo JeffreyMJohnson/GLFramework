@@ -9,11 +9,15 @@
 
 #include "Sprite.h"
 
+#include "Font.h"
+
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
 
 GLFWwindow* window;
 GLuint shaderProgram;
+double totalTime;
+double deltaTime;
 
 void Initialize();
 void Destroy();
@@ -22,36 +26,34 @@ GLuint CreateProgram(const char* a_vertex, const char* a_frag);
 GLuint CreateShader(GLenum a_ShaderType, const char* a_ShaderFile);
 void HandleUI(Sprite& s);
 
+//debug
+int animFrame = 1;
+Font font;
+
 
 int main()
 {
 	Initialize();
 	CreateShaderProgram();
 	Sprite s;
-	s.Initialize(250, 250, shaderProgram, ".\\resources\\images\\testTexture.png");
+	s.Initialize(100, 100, shaderProgram, ".\\resources\\images\\testTexture.png");
+	s.translation = glm::vec3(SCREEN_WIDTH * .5, SCREEN_HEIGHT * .5, 0);
+	s.UpdateTransform();
+	s.SetUV(0, 0, .25, .25);
+
+	//work on font
+	font.Init(".\\resources\\fonts\\arial.fnt");
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glClearColor(.5, .5, .5, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		s.translation = glm::vec3(250, 250, 0);
-		s.UpdateTransform();
-		s.SetUV(0, 0, .25, .25);
+		
+		
 		s.Update();
 		s.Draw();
-		s.translation = glm::vec3(550, 550, 0);
-		s.UpdateTransform();
-		s.SetUV(0, .25, .25, .5);
-		s.Draw();
 
-		s.translation = glm::vec3(550, 250, 0);
-		s.UpdateTransform();
-		s.Draw();
-
-		s.translation = glm::vec3(250, 550, 0);
-		s.UpdateTransform();
-		s.Draw();
 
 		HandleUI(s);
 
@@ -80,6 +82,9 @@ void Initialize()
 	glewExperimental = GL_TRUE;
 	//initialize GLEW
 	glewInit();
+
+	totalTime = 0.0;
+	deltaTime = 0.0;
 }
 
 void Destroy()
@@ -197,18 +202,41 @@ void HandleUI(Sprite& s)
 {
 	if (glfwGetKey(window, GLFW_KEY_A))
 	{
-		//translation += glm::vec3(-.1, 0, 0);
-		s.rotZ += .001;
+		s.translation += glm::vec3(-.1, 0, 0);
+		//s.rotZ += .001;
 		s.UpdateTransform();
 	}
 	if (glfwGetKey(window, GLFW_KEY_D))
 	{
-		//translation += glm::vec3(.1, 0, 0);
-		s.rotZ -= .001;
+		s.translation += glm::vec3(.1, 0, 0);
+		//s.rotZ -= .001;
+		s.UpdateTransform();
+	}
+	if (glfwGetKey(window, GLFW_KEY_W))
+	{
+		s.translation += glm::vec3(0, .1, 0);
+		s.UpdateTransform();
+	}
+	if (glfwGetKey(window, GLFW_KEY_S))
+	{
+		s.translation += glm::vec3(0, -.1, 0);
 		s.UpdateTransform();
 	}
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+	if (glfwGetKey(window, GLFW_KEY_TAB))
+	{
+		if (animFrame == 1)
+		{
+			animFrame = 2;
+			s.SetUV(.5, .5, .75, .75);
+		}
+		else
+		{
+			animFrame = 1;
+			s.SetUV(.25, .25, .5, .5);
+		}
 	}
 }
