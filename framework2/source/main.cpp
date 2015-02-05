@@ -42,7 +42,13 @@ int main()
 	s.SetUV(0, 0, .25, .25);
 
 	//work on font
-	font.Init(".\\resources\\fonts\\arial.fnt");
+	font.Init(".\\resources\\fonts\\", "arial.fnt");
+	Sprite text;
+	FontChar ch = font.Chars['F'];
+	//starting spot
+
+	//create another sprite init that takes already loaded texture;
+	text.Initialize(ch.width, ch.height, shaderProgram, font.)
 
 	while (!glfwWindowShouldClose(window))
 	{

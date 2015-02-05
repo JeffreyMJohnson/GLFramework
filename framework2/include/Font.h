@@ -15,10 +15,11 @@ public:
 	uint lineHeight;
 	std::string name;
 	std::string imageFileName;
+	std::string path;
 	uint charCount;
 	uint spriteSheetWidth, spriteSheetHeight;
 	uint fontSpriteSheetTextureID;
-	std::map<uint,FontChar> Chars;
+	std::map<uint, FontChar> Chars;
 
 	Font()
 	{
@@ -27,23 +28,26 @@ public:
 		charCount = 0;
 	}
 
-	bool Init(const char* fontFilePath, const char* fontDescriptionFileName)
+	bool Init(const char* fontFilePath, const char* fontFileName)
 	{
 		//imageFileName = fontImagFile;
 		//fontSpriteSheetTextureID = loadTexture(fontImagFile);
-		
 
-		//left off adding path and 
-		return LoadFont(fontDescriptionFile);
+		path = std::string(fontFilePath);
+
+
+		return LoadFont(fontFileName);
 	}
 
 private:
-	bool LoadFont(const char* fileName)
+	bool LoadFont(const char* fontFileName)
 	{
+		std::string pathName(path);
+		pathName += fontFileName;
 		using namespace pugi;
 		xml_document doc;
 		//xml_parse_result result = doc.load_file(".\\resources\\fonts\\arial.fnt");
-		xml_parse_result result = doc.load_file(fileName);
+		xml_parse_result result = doc.load_file(pathName.c_str());
 		if (!result)
 		{
 			std::cout << "Error loading font file, verify path (do the slashes need escaping?)\n";
@@ -59,7 +63,7 @@ private:
 		//base = std::atoi(common.attribute("base").value());
 		spriteSheetWidth = std::atoi(common.attribute("scaleW").value());
 		spriteSheetHeight = std::atoi(common.attribute("scaleH").value());
-		
+
 		name = doc.child("font").child("info").attribute("face").value();
 		//imageFileName = doc.child("font").child("pages").child("page").attribute("file").value();
 
@@ -74,13 +78,14 @@ private:
 			ch.xOffset = std::atof(Char.attribute("xoffset").value());
 			ch.yOffset = std::atof(Char.attribute("yoffset").value());
 			ch.xAdvance = std::atof(Char.attribute("xadvance").value());
-			
+
 			ch.UV = CalculateUV(ch);
 			Chars[ch.ID] = ch;
 		}
 
 		//get filename
 		imageFileName = doc.child("font").child("pages").first_child().attribute("file").value();
+		return true;
 	}
 
 	glm::vec4 CalculateUV(FontChar& ch)
@@ -119,14 +124,14 @@ private:
 		//		SOIL_free_image_data(pImageData);
 		//	}
 
-			uiTextureID = SOIL_load_OGL_texture(a_pFilename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT);
+		uiTextureID = SOIL_load_OGL_texture(a_pFilename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT);
 
-			//check for errors
-			if (uiTextureID == 0)
-			{
-				std::cerr << "SOIL loading error: " << SOIL_last_result() << std::endl;
-			}
-			return uiTextureID;
+		//check for errors
+		if (uiTextureID == 0)
+		{
+			std::cerr << "SOIL loading error: " << SOIL_last_result() << std::endl;
+		}
+		return uiTextureID;
 		//}
 	}
 };
