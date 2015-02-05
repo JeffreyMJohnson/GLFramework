@@ -63,9 +63,10 @@ struct Sprite
 
 
 
-	void Initialize(float a_width, float a_height, GLuint a_shaderProgram, char* texturePath)
+	void Initialize(float a_width, float a_height, const char* texturePath)
 	{
-		shaderProgram = a_shaderProgram;
+		//shaderProgram = a_shaderProgram;
+		CreateShaderProgram();
 		glLinkProgram(shaderProgram);
 		glUseProgram(shaderProgram);
 
@@ -135,6 +136,11 @@ struct Sprite
 
 
 		UpdateTransform();
+
+		//clear state
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	void Update()
@@ -157,16 +163,37 @@ struct Sprite
 		//bottom-left
 		vertices[14] = minX;
 		vertices[15] = maxY;
+
+		//set state
+		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+		//load data into gpu buffer
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float)* 16, vertices, GL_STATIC_DRAW);
 
+		//clear state
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	void Draw()
 	{
-		glDrawArrays(GL_QUADS, 0, 4);
+		//set state
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindTexture(GL_TEXTURE_2D, textureID);
 
+		//send uniform to shader
 		glUniformMatrix4fv(uniMVP, 1, GL_FALSE, glm::value_ptr(modelViewProjectionMatrix));
+
+		//draw it
+		glDrawArrays(GL_QUADS, 0, 4);
+		
+
+		//clear state
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 	}
 
@@ -183,12 +210,126 @@ struct Sprite
 
 		modelViewProjectionMatrix = projectionMatrix * viewMatrix * transform;
 
+		//set state
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
 		glUniformMatrix4fv(uniMVP, 1, GL_FALSE, glm::value_ptr(modelViewProjectionMatrix));
+
+		//clear state
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	float DegreeToRadians(float degrees)
 	{
 		return degrees * RADIAN_CONVERSION;
+	}
+
+	void CreateShaderProgram()
+	{
+		shaderProgram = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\TexturedFragmentShader.glsl");
+		//shaderProgram = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\FlatFragmentShader.glsl");
+	}
+
+	GLuint CreateShader(GLenum a_ShaderType, const char* a_ShaderFile)
+	{
+		std::string shaderCode;
+		//open shader file
+		std::ifstream shaderStream(a_ShaderFile);
+		//if that worked ok, load file line by line
+		if (shaderStream.is_open())
+		{
+			std::string line = "";
+			while (std::getline(shaderStream, line))
+			{
+				shaderCode += "\n" + line;
+			}
+			shaderStream.close();
+		}
+
+		//convert to cstring
+		char const* shaderSourcePointer = shaderCode.c_str();
+
+		//create shader ID
+		GLuint shader = glCreateShader(a_ShaderType);
+		//load source code
+		glShaderSource(shader, 1, &shaderSourcePointer, NULL);
+
+		//compile shader
+		glCompileShader(shader);
+
+		//check for errors
+		GLint status;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+		if (status == GL_FALSE)
+		{
+			GLint infoLogLength;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+			GLchar* infoLog = new GLchar[infoLogLength + 1];
+			glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
+
+			const char* shaderType = NULL;
+			switch (a_ShaderType)
+			{
+			case GL_VERTEX_SHADER:
+				shaderType = "vertex";
+				break;
+			case GL_FRAGMENT_SHADER:
+				shaderType = "fragment";
+				break;
+			}
+
+			fprintf(stderr, "Compile failure in %s shader:\n%s\n", shaderType, infoLog);
+			delete[] infoLog;
+		}
+
+		return shader;
+
+	}
+
+	GLuint CreateProgram(const char* a_vertex, const char* a_frag)
+	{
+
+		std::vector<GLuint> shaderList;
+
+		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, a_vertex));
+		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, a_frag));
+
+		//create shader program ID
+		GLuint program = glCreateProgram();
+
+		//attach shaders
+		for (auto shader = shaderList.begin(); shader != shaderList.end(); shader++)
+		{
+			glAttachShader(program, *shader);
+		}
+
+		//link program
+		glLinkProgram(program);
+
+		//check for link errors and output them
+		GLint status;
+		glGetProgramiv(program, GL_LINK_STATUS, &status);
+		if (status == GL_FALSE)
+		{
+			GLint infoLogLength;
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+			GLchar* infoLog = new GLchar[infoLogLength + 1];
+			glGetProgramInfoLog(program, infoLogLength, NULL, infoLog);
+
+			fprintf(stderr, "Linker failure: %s\n", infoLog);
+			delete[] infoLog;
+		}
+
+		for (auto shader = shaderList.begin(); shader != shaderList.end(); shader++)
+		{
+			glDetachShader(program, *shader);
+			glDeleteShader(*shader);
+		}
+		return program;
 	}
 
 };

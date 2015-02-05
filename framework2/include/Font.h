@@ -35,8 +35,12 @@ public:
 
 		path = std::string(fontFilePath);
 
+		if (!LoadFont(fontFileName))
+		{
+			return false;
+		}
+		return true;
 
-		return LoadFont(fontFileName);
 	}
 
 private:

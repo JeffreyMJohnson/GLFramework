@@ -34,9 +34,9 @@ Font font;
 int main()
 {
 	Initialize();
-	CreateShaderProgram();
+	//CreateShaderProgram();
 	Sprite s;
-	s.Initialize(100, 100, shaderProgram, ".\\resources\\images\\testTexture.png");
+	s.Initialize(100, 100, ".\\resources\\images\\testTexture.png");
 	s.translation = glm::vec3(SCREEN_WIDTH * .5, SCREEN_HEIGHT * .5, 0);
 	s.UpdateTransform();
 	s.SetUV(0, 0, .25, .25);
@@ -46,9 +46,10 @@ int main()
 	Sprite text;
 	FontChar ch = font.Chars['F'];
 	//starting spot
+	text.Initialize(ch.width, ch.height, (font.path + font.imageFileName).c_str());
+	text.translation = glm::vec3(200, 200, 0);
+	text.UpdateTransform();
 
-	//create another sprite init that takes already loaded texture;
-	text.Initialize(ch.width, ch.height, shaderProgram, font.)
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -60,6 +61,7 @@ int main()
 		s.Update();
 		s.Draw();
 
+		text.Draw();
 
 		HandleUI(s);
 
