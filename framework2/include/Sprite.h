@@ -63,33 +63,63 @@ struct Sprite
 
 
 
-	void Initialize(float a_width, float a_height, const char* texturePath)
+	void Initialize(float a_width, float a_height, const char* texturePath, bool centeredOrigin)
 	{
+
+
+
 		//shaderProgram = a_shaderProgram;
 		CreateShaderProgram();
 		glLinkProgram(shaderProgram);
 		glUseProgram(shaderProgram);
 
 		vertices = new float[16];
-		vertices[0] = -.5;//top-left
-		vertices[1] = .5;
-		vertices[2] = 0;
-		vertices[3] = 0;
+		if (centeredOrigin)
+		{
+			vertices[0] = -.5;//top-left
+			vertices[1] = .5;
+			vertices[2] = 0;
+			vertices[3] = 0;
 
-		vertices[4] = .5;//top-right
-		vertices[5] = .5;
-		vertices[6] = 1;
-		vertices[7] = 0;
+			vertices[4] = .5;//top-right
+			vertices[5] = .5;
+			vertices[6] = 1;
+			vertices[7] = 0;
 
-		vertices[8] = .5;//bottom-right
-		vertices[9] = -.5;
-		vertices[10] = 1;
-		vertices[11] = 1;
+			vertices[8] = .5;//bottom-right
+			vertices[9] = -.5;
+			vertices[10] = 1;
+			vertices[11] = 1;
 
-		vertices[12] = -.5;//bottom-left
-		vertices[13] = -.5;
-		vertices[14] = 0;
-		vertices[15] = 1;
+			vertices[12] = -.5;//bottom-left
+			vertices[13] = -.5;
+			vertices[14] = 0;
+			vertices[15] = 1;
+		}
+		else
+		{
+			vertices[0] = 0;//top-left
+			vertices[1] = 1;
+			vertices[2] = 0;
+			vertices[3] = 0;
+
+			vertices[4] = 1;//top-right
+			vertices[5] = 1;
+			vertices[6] = 1;
+			vertices[7] = 0;
+
+			vertices[8] = 1;//bottom-right
+			vertices[9] = 0;
+			vertices[10] = 1;
+			vertices[11] = 1;
+
+			vertices[12] = 0;//bottom-left
+			vertices[13] = 0;
+			vertices[14] = 0;
+			vertices[15] = 1;
+		}
+		
+
 
 		glGenBuffers(1, &vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -97,6 +127,9 @@ struct Sprite
 
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		GLint positionAttrib = glGetAttribLocation(shaderProgram, "position");
 		glEnableVertexAttribArray(positionAttrib);

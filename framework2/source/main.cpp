@@ -36,7 +36,7 @@ int main()
 	Initialize();
 	//CreateShaderProgram();
 	Sprite s;
-	s.Initialize(100, 100, ".\\resources\\images\\testTexture.png");
+	s.Initialize(100, 100, ".\\resources\\images\\testTexture.png", true);
 	s.translation = glm::vec3(SCREEN_WIDTH * .5, SCREEN_HEIGHT * .5, 0);
 	s.UpdateTransform();
 	s.SetUV(0, 0, .25, .25);
