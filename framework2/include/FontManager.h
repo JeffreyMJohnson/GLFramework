@@ -11,8 +11,6 @@ public:
 	Font mFont;
 	Sprite mCharSprite;
 
-	const char* text = "Foo Bar";
-	glm::vec2 startPosition = glm::vec2(200, 200);
 	float scale = 1;
 
 	FontManager()
@@ -22,10 +20,10 @@ public:
 
 	
 
-	void Draw()
+	void DrawText(const char* text, float startPositionX, float startPositionY)
 	{
 		std::string s(text);
-		glm::vec2 cursorPosition = glm::vec2(startPosition.x, startPosition.y);
+		glm::vec2 cursorPosition = glm::vec2(startPositionX, startPositionY);
 		
 		for (std::string::iterator it = s.begin(); it != s.end(); it++)
 		{

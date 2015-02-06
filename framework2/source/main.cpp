@@ -45,19 +45,6 @@ int main()
 	FontManager fm;
 	fm.Initialize(".\\resources\\fonts\\", "arial.fnt");
 
-	//font.Init(".\\resources\\fonts\\", "arial.fnt");
-	//Sprite text;
-	//FontChar ch = font.Chars['F'];
-	////starting spot
-	//float textScale = 1;
-	//text.Initialize(ch.width * textScale, ch.height * textScale, (font.path + font.imageFileName).c_str());
-	//text.translation = glm::vec3(200, 200, 0);
-	//text.UpdateTransform();
-
-	//text.SetUV(ch.UV.x, ch.UV.y, ch.UV.z, ch.UV.w);
-
-	//glm::vec3 nextCharPos = glm::vec3(font.Chars['o'].xAdvance + 200, 200, 0);
-
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -69,14 +56,9 @@ int main()
 		s.Update();
 		s.Draw();
 
-		fm.Draw();
+		fm.DrawText("Foo to the Bar...", 200,200);
 
-		//text.Draw();
-		//ch = font.Chars['o'];
-		//text.SetUV(ch.UV.x, ch.UV.y, ch.UV.z, ch.UV.w);
-		//text.translation = nextCharPos;
-		//text.UpdateTransform();
-		//text.Draw();
+		fm.DrawText("1234567890", 200, 100);
 
 		HandleUI(s);
 
