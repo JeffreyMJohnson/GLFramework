@@ -11,6 +11,9 @@
 
 #include "FontManager.h"
 
+#include "Animation.h"
+//#include "pugixml\pugixml.hpp"
+
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
 
@@ -36,14 +39,33 @@ int main()
 	Initialize();
 	//CreateShaderProgram();
 	Sprite s;
-	s.Initialize(100, 100, ".\\resources\\images\\testTexture.png", true);
+	s.Initialize(25, 25, ".\\resources\\images\\testTexture.png", true);
 	s.translation = glm::vec3(SCREEN_WIDTH * .5, SCREEN_HEIGHT * .5, 0);
 	s.UpdateTransform();
-	s.SetUV(0, 0, .25, .25);
+	//s.SetUV(0, 0, .25, .25);
 
 	//work on font
 	FontManager fm;
 	fm.Initialize(".\\resources\\fonts\\", "arial.fnt");
+
+	glm::vec2 currentFrame(0,2);
+	glm::vec2 sheetSize(50, 50);
+	glm::vec2 spriteCount(4, 4);
+	glm::vec2 frameSize(sheetSize.x / spriteCount.x, sheetSize.y / spriteCount.y);
+	//normalize
+	s.SetUV(
+		(currentFrame.x * frameSize.x) / sheetSize.x,
+		(currentFrame.y * frameSize.y) / sheetSize.y,
+		((currentFrame.x * frameSize.x) + frameSize.x) / sheetSize.x,
+		((currentFrame.y * frameSize.y) + frameSize.y) / sheetSize.y
+		);
+
+	//work on animation
+	Animation anim;
+	//using namespace pugi;
+	//xml_document doc;
+	//xml_parse_result result = doc.loa
+
 
 
 	while (!glfwWindowShouldClose(window))
@@ -59,6 +81,9 @@ int main()
 		fm.DrawText("Foo to the Bar...", 200,200);
 
 		fm.DrawText("1234567890", 200, 100);
+
+		anim.Update();
+		anim.Draw();
 
 		HandleUI(s);
 
