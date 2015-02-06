@@ -13,48 +13,24 @@ struct Frame
 class Animation
 {
 public:
-	Sprite mSpriteSheet;
+	Sprite mSprite;
 	std::string mName;
 	std::vector<Frame> mFrames;
-	Frame mCurrentFrame;
+	int mCurrentFrame;
+	const float mFrameDuration = (1.0 / 15.0);
+	double mElapsedTime = 0;
 
 	Animation()
 	{
-		mSpriteSheet.Initialize(100, 100, ".\\resources\\images\\smurf_sprite.png", true);
-		mSpriteSheet.translation = glm::vec3(300, 300, 0);
-		mSpriteSheet.UpdateTransform();
+		mSprite.Initialize(100, 100, ".\\resources\\images\\smurf_sprite.png", true);
+		mSprite.translation = glm::vec3(300, 300, 0);
+		mSprite.UpdateTransform();
 
 		glm::vec2 spriteSize((512.0f / 4), (512.0f / 4));
 		float sheetSize = 512.0f;
 
 		LoadData();
-
-		//Frame f1;
-		//f1.number = 0;
-		//f1.UV = glm::vec4(
-		//	0,
-		//	0,
-		//	spriteSize.x / sheetSize,
-		//	spriteSize.y / sheetSize);
-		//mFrames.push_back(f1);
-
-		//Frame f2;
-		//f2.number = 1;
-		//f2.UV = glm::vec4(
-		//	spriteSize.x / sheetSize,
-		//	0,
-		//	(spriteSize.x * 2) / sheetSize,
-		//	spriteSize.y / sheetSize);
-		//mFrames.push_back(f2);
-
-		//Frame f3;
-		//f3.number = 2;
-		//f3.UV = glm::vec4(
-		//	(spriteSize.x * 2) / sheetSize,
-		//	0,
-		//	(spriteSize.x * 3) / sheetSize,
-		//	spriteSize.y / sheetSize);
-		//mFrames.push_back(f3);
+		mCurrentFrame = 0;
 
 	}
 
@@ -76,24 +52,32 @@ public:
 		}
 	}
 
-	void Update()
+	void Update(double deltaTime)
 	{
-		//check if last frams
-		if (mCurrentFrame.number == mFrames.size() - 1)
+		const float speed = .1;
+		mElapsedTime += deltaTime;
+
+		if (mElapsedTime > mFrameDuration)
 		{
-			mCurrentFrame = mFrames[0];
+			mElapsedTime = 0;
+			//check if last frame
+			if (mCurrentFrame == mFrames.size() - 1)
+			{
+				mCurrentFrame = 0;
+			}
+			else
+			{
+				mCurrentFrame++;
+			}
 		}
-		else
-		{
-			mCurrentFrame = mFrames[(mCurrentFrame.number + 1)];
-		}
-		mSpriteSheet.SetUV(mCurrentFrame.UV.x, mCurrentFrame.UV.y, mCurrentFrame.UV.z, mCurrentFrame.UV.w);
+		mSprite.SetUV(mFrames[mCurrentFrame].UV.x, mFrames[mCurrentFrame].UV.y, mFrames[mCurrentFrame].UV.z, mFrames[mCurrentFrame].UV.w);
+		
 
 	}
 
 	void Draw()
 	{
-		mSpriteSheet.Draw();
+		mSprite.Draw();
 	}
 
 };

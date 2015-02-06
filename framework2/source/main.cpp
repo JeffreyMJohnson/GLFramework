@@ -27,7 +27,8 @@ void Destroy();
 void CreateShaderProgram();
 GLuint CreateProgram(const char* a_vertex, const char* a_frag);
 GLuint CreateShader(GLenum a_ShaderType, const char* a_ShaderFile);
-void HandleUI(Sprite& s);
+void HandleUI(Sprite& s, Animation& a);
+void ResetDeltaTime();
 
 //debug
 int animFrame = 1;
@@ -62,9 +63,8 @@ int main()
 
 	//work on animation
 	Animation anim;
-	//using namespace pugi;
-	//xml_document doc;
-	//xml_parse_result result = doc.loa
+	deltaTime = 0;
+	totalTime = 0;
 
 
 
@@ -73,6 +73,7 @@ int main()
 		glClearColor(.5, .5, .5, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		ResetDeltaTime();
 		
 		
 		s.Update();
@@ -82,10 +83,10 @@ int main()
 
 		fm.DrawText("1234567890", 200, 100);
 
-		anim.Update();
+		anim.Update(deltaTime);
 		anim.Draw();
 
-		HandleUI(s);
+		HandleUI(s, anim);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -94,6 +95,13 @@ int main()
 	Destroy();
 
 	return 0; 
+}
+
+void ResetDeltaTime()
+{
+	deltaTime = glfwGetTime();
+	totalTime += deltaTime;
+	glfwSetTime(0);
 }
 
 void Initialize()
@@ -228,19 +236,23 @@ GLuint CreateProgram(const char* a_vertex, const char* a_frag)
 	return program;
 }
 
-void HandleUI(Sprite& s)
+void HandleUI(Sprite& s, Animation& a)
 {
 	if (glfwGetKey(window, GLFW_KEY_A))
 	{
 		s.translation += glm::vec3(-.1, 0, 0);
-		//s.rotZ += .001;
+		a.mSprite.translation += glm::vec3(-.1, 0, 0);
+		a.mSprite.scale *= glm::vec3(-1, 1, 1);
 		s.UpdateTransform();
+		a.mSprite.UpdateTransform();
 	}
 	if (glfwGetKey(window, GLFW_KEY_D))
 	{
 		s.translation += glm::vec3(.1, 0, 0);
+		a.mSprite.translation += glm::vec3(.1, 0, 0);
 		//s.rotZ -= .001;
 		s.UpdateTransform();
+		a.mSprite.UpdateTransform();
 	}
 	if (glfwGetKey(window, GLFW_KEY_W))
 	{
