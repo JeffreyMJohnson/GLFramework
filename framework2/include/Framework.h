@@ -8,6 +8,7 @@
 
 #include "Globals.h"
 #include "Sprite.h"
+#include "FontManager.h"
 
 #include <vector>
 
@@ -17,9 +18,13 @@ public:
 	void Initialize(const int screenWidth, const int screenHeight, const char* title);
 	void Shutdown();
 	bool UpdateFramework();
+
+
 	unsigned int CreateSprite(const float width, const float height, const char* texture, const bool isCentered);
 	void MoveSprite(unsigned int spriteID, const float xPosition, const float yPosition);
 	void DrawSprite(unsigned int spriteID);
+
+	void DrawText(const char* text, const float xPosition, float yPosition);
 
 	/*
 	Set backgound color to given RGBA values.  Values are expected to be from 0 to 1.
@@ -39,6 +44,7 @@ private:
 	double mTotalTime;
 	double mDeltaTime;
 	std::vector<Sprite*> mSpriteList;
+	FontManager mFontMan;
 
 	void ResetDeltaTime();
 };

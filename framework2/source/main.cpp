@@ -10,7 +10,7 @@
 //#include "Sprite.h"
 #include "Framework.h"
 
-#include "FontManager.h"
+
 
 #include "Animation.h"
 //#include "pugixml\pugixml.hpp"
@@ -50,8 +50,8 @@ int main()
 
 
 	//work on font
-	FontManager fm;
-	fm.Initialize(".\\resources\\fonts\\", "arial.fnt");
+	//FontManager fm;
+	//fm.Initialize(".\\resources\\fonts\\", "arial.fnt");
 
 	glm::vec2 currentFrame(0,2);
 	glm::vec2 sheetSize(50, 50);
@@ -86,11 +86,9 @@ int main()
 
 		frk.DrawSprite(s);
 
+		frk.DrawText("Foo to the Bar...", 200, 200);
 
-		fm.DrawText("Foo to the Bar...", 200,200);
-
-		fm.DrawText("1234567890", 200, 100);
-
+		frk.DrawText("1234567890", 200, 100);
 		anim.Update(frk.GetDeltaTime());
 		anim.Draw();
 

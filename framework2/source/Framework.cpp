@@ -23,6 +23,8 @@ void Framework::Initialize(const int screenWidth, const int screenHeight, const 
 	mTotalTime = 0.0;
 	mDeltaTime = 0.0;
 	mBackgroundColor = glm::vec4(0, 0, 0, 1);
+
+	mFontMan.Initialize(".\\resources\\fonts\\", "arial.fnt");
 }
 
 /*
@@ -72,6 +74,11 @@ void Framework::MoveSprite(unsigned int spriteID, const float xPosition, const f
 void Framework::DrawSprite(unsigned int spriteID)
 {
 	mSpriteList[spriteID]->Draw();
+}
+
+void Framework::DrawText(const char* text, const float xPosition, float yPosition)
+{
+	mFontMan.DrawText(text, xPosition, yPosition);
 }
 
 /*
