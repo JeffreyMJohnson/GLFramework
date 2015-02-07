@@ -8,7 +8,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-//#include "SOIL/SOIL.h"
+#include "SOIL/SOIL.h"
 
 #include <string>
 #include <iostream>
@@ -179,6 +179,12 @@ struct Sprite
 	void Update()
 	{
 
+	}
+
+	void SetTranslation(const glm::vec3 a_Translation)
+	{
+		translation = a_Translation;
+		UpdateTransform();
 	}
 
 	void SetUV(float minX, float minY, float maxX, float maxY)
