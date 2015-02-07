@@ -16,13 +16,15 @@ public:
 	Sprite mSprite;
 	std::string mName;
 	std::vector<Frame> mFrames;
-	int mCurrentFrame;
+	float mDirection;
+	float mCurrentFrame;
 	const float mFrameDuration = (1.0 / 15.0);
 	double mElapsedTime = 0;
+	bool mIsWalking;
 
 	Animation()
 	{
-		mSprite.Initialize(100, 100, ".\\resources\\images\\smurf_sprite.png", true);
+		mSprite.Initialize(200, 200, ".\\resources\\images\\smurf_sprite.png", true);
 		mSprite.translation = glm::vec3(300, 300, 0);
 		mSprite.UpdateTransform();
 
@@ -31,7 +33,8 @@ public:
 
 		LoadData();
 		mCurrentFrame = 0;
-
+		mDirection = 1.0f;
+		mIsWalking = false;
 	}
 
 	void LoadData()
@@ -57,7 +60,7 @@ public:
 		const float speed = .1;
 		mElapsedTime += deltaTime;
 
-		if (mElapsedTime > mFrameDuration)
+		if (mElapsedTime > mFrameDuration && mIsWalking)
 		{
 			mElapsedTime = 0;
 			//check if last frame
@@ -70,9 +73,19 @@ public:
 				mCurrentFrame++;
 			}
 		}
+		else if (!mIsWalking && mElapsedTime > mFrameDuration)
+		{
+			mElapsedTime = 0;
+			mCurrentFrame = 0;
+		}
 		mSprite.SetUV(mFrames[mCurrentFrame].UV.x, mFrames[mCurrentFrame].UV.y, mFrames[mCurrentFrame].UV.z, mFrames[mCurrentFrame].UV.w);
-		
+	}
 
+	void SwitchDirection()
+	{
+		mDirection *= -1;
+		mSprite.scale.x *= -1;
+		mSprite.UpdateTransform();
 	}
 
 	void Draw()

@@ -242,17 +242,24 @@ void HandleUI(Sprite& s, Animation& a)
 	{
 		s.translation += glm::vec3(-.1, 0, 0);
 		a.mSprite.translation += glm::vec3(-.1, 0, 0);
-		a.mSprite.scale *= glm::vec3(-1, 1, 1);
 		s.UpdateTransform();
 		a.mSprite.UpdateTransform();
+		a.mIsWalking = true;
+		if (a.mDirection == 1)
+			a.SwitchDirection();
+		return;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D))
 	{
 		s.translation += glm::vec3(.1, 0, 0);
 		a.mSprite.translation += glm::vec3(.1, 0, 0);
-		//s.rotZ -= .001;
+		
 		s.UpdateTransform();
 		a.mSprite.UpdateTransform();
+		a.mIsWalking = true;
+		if (a.mDirection == -1)
+			a.SwitchDirection();
+		return;
 	}
 	if (glfwGetKey(window, GLFW_KEY_W))
 	{
@@ -281,4 +288,5 @@ void HandleUI(Sprite& s, Animation& a)
 			s.SetUV(.25, .25, .5, .5);
 		}
 	}
+	a.mIsWalking = false;
 }
