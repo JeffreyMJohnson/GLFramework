@@ -76,6 +76,25 @@ void Framework::DrawSprite(unsigned int spriteID)
 	mSpriteList[spriteID]->Draw();
 }
 
+unsigned int Framework::CreateAnimation(const float width, const float height, const char* spriteSheetDataFile)
+{
+	Animation* anim = new Animation;
+	anim->Initialize(width, height, spriteSheetDataFile);
+	mAnimationList.push_back(anim);
+	return mAnimationList.size() - 1;
+}
+
+void Framework::MoveAnimation(unsigned int animationID, float xPosition, float yPosition)
+{
+	mAnimationList[animationID]->mSprite.SetTranslation(glm::vec3(xPosition, yPosition, 0));
+}
+
+void Framework::DrawAnimation(unsigned int animationID)
+{
+	mAnimationList[animationID]->Update(GetDeltaTime());
+	mAnimationList[animationID]->Draw();
+}
+
 void Framework::DrawText(const char* text, const float xPosition, float yPosition)
 {
 	mFontMan.DrawText(text, xPosition, yPosition);

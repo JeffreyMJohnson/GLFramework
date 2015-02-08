@@ -9,6 +9,7 @@
 #include "Globals.h"
 #include "Sprite.h"
 #include "FontManager.h"
+#include "Animation.h"
 
 #include <vector>
 
@@ -23,6 +24,10 @@ public:
 	unsigned int CreateSprite(const float width, const float height, const char* texture, const bool isCentered);
 	void MoveSprite(unsigned int spriteID, const float xPosition, const float yPosition);
 	void DrawSprite(unsigned int spriteID);
+
+	unsigned int CreateAnimation(const float width, const float height, const char* spriteSheetDataFile);
+	void MoveAnimation(unsigned int animationID, float xPosition, float yPosition);
+	void DrawAnimation(unsigned int animationID);
 
 	void DrawText(const char* text, const float xPosition, float yPosition);
 
@@ -44,6 +49,7 @@ private:
 	double mTotalTime;
 	double mDeltaTime;
 	std::vector<Sprite*> mSpriteList;
+	std::vector<Animation*> mAnimationList;
 	FontManager mFontMan;
 
 	void ResetDeltaTime();

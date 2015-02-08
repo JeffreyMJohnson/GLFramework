@@ -3,6 +3,7 @@
 #include "pugixml\pugixml.hpp"
 #include <vector>
 #include <string>
+#include <map>
 
 struct Frame
 {
@@ -14,44 +15,51 @@ class Animation
 {
 public:
 	Sprite mSprite;
-	std::string mName;
-	std::vector<Frame> mFrames;
+	std::map<std::string, std::vector<Frame>> mFrameData;
 	float mDirection;
 	float mCurrentFrame;
+	std::string mAnimationState;
+	std::string mSpriteSheetFile;
+	std::string mFilePath;
 	const float mFrameDuration = (1.0 / 15.0);
 	double mElapsedTime = 0;
-	bool mIsWalking;
 
 	Animation()
 	{
-		mSprite.Initialize(200, 200, ".\\resources\\images\\smurf_sprite.png", true);
-		mSprite.translation = glm::vec3(300, 300, 0);
-		mSprite.UpdateTransform();
-
-		glm::vec2 spriteSize((512.0f / 4), (512.0f / 4));
-		float sheetSize = 512.0f;
-
-		LoadData();
 		mCurrentFrame = 0;
 		mDirection = 1.0f;
-		mIsWalking = false;
+		mAnimationState = "walk";
+		//mAnimationState = "idle";
 	}
 
-	void LoadData()
+	void Initialize(const float width, const float height, const char* spriteSheetDataFile)
 	{
+		LoadData(spriteSheetDataFile);
+		mSprite.Initialize(width, height, (mFilePath + mSpriteSheetFile).c_str(), true);
+	}
+
+	void LoadData(const char* spriteSheetDataFile)
+	{
+		mFilePath = GetPath(spriteSheetDataFile);
 		using namespace pugi;
 		xml_document doc;
-		xml_parse_result result = doc.load_file(".\\resources\\images\\smurf_sprite.xml");
+		xml_parse_result result = doc.load_file(spriteSheetDataFile);
+		mSpriteSheetFile = doc.child("atlas").child("common").attribute("sheet").value();
 
-		for (xml_node frame : doc.child("atlas").child("frames").children())
+		for (xml_node frames : doc.child("atlas").children("frames"))
 		{
-			Frame f;
-			f.number = std::atoi(frame.attribute("id").value());
-			f.UV.x = std::atof(frame.attribute("minX").value());
-			f.UV.y = std::atof(frame.attribute("minY").value());
-			f.UV.z = std::atof(frame.attribute("maxX").value());
-			f.UV.w = std::atof(frame.attribute("maxY").value());
-			mFrames.push_back(f);
+			std::vector <Frame> framesList;
+			for (xml_node frame : frames.children())
+			{
+				Frame f;
+				f.number = std::atoi(frame.attribute("id").value());
+				f.UV.x = std::atof(frame.attribute("minX").value());
+				f.UV.y = std::atof(frame.attribute("minY").value());
+				f.UV.z = std::atof(frame.attribute("maxX").value());
+				f.UV.w = std::atof(frame.attribute("maxY").value());
+				framesList.push_back(f);
+			}
+			mFrameData[frames.attribute("name").value()] = framesList;
 		}
 	}
 
@@ -60,11 +68,11 @@ public:
 		const float speed = .1;
 		mElapsedTime += deltaTime;
 
-		if (mElapsedTime > mFrameDuration && mIsWalking)
+		if (mElapsedTime > mFrameDuration)
 		{
 			mElapsedTime = 0;
 			//check if last frame
-			if (mCurrentFrame == mFrames.size() - 1)
+			if (mCurrentFrame == mFrameData[mAnimationState].size() - 1)
 			{
 				mCurrentFrame = 0;
 			}
@@ -73,12 +81,7 @@ public:
 				mCurrentFrame++;
 			}
 		}
-		else if (!mIsWalking && mElapsedTime > mFrameDuration)
-		{
-			mElapsedTime = 0;
-			mCurrentFrame = 0;
-		}
-		mSprite.SetUV(mFrames[mCurrentFrame].UV.x, mFrames[mCurrentFrame].UV.y, mFrames[mCurrentFrame].UV.z, mFrames[mCurrentFrame].UV.w);
+		mSprite.SetUV(mFrameData[mAnimationState][mCurrentFrame].UV.x, mFrameData[mAnimationState][mCurrentFrame].UV.y, mFrameData[mAnimationState][mCurrentFrame].UV.z, mFrameData[mAnimationState][mCurrentFrame].UV.w);
 	}
 
 	void SwitchDirection()
@@ -91,6 +94,15 @@ public:
 	void Draw()
 	{
 		mSprite.Draw();
+	}
+
+	std::string GetPath(const char* spriteSheetDataFile)
+	{
+		std::string s(spriteSheetDataFile);
+		unsigned int pos = s.find_last_of("\\");
+		if (pos == std::string::npos)
+			return "";
+		return s.substr(0, pos + 1);
 	}
 
 };
