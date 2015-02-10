@@ -37,6 +37,12 @@ void Framework::Shutdown()
 		delete mSpriteList[i];
 	}
 	mSpriteList.clear();
+
+	for (int i = 0; i < mAnimationList.size(); i++)
+	{
+		delete mAnimationList[i];
+	}
+	mAnimationList.clear();
 	glfwTerminate();
 }
 
@@ -58,7 +64,7 @@ bool Framework::UpdateFramework()
 	return !(glfwWindowShouldClose(mWindow));
 }
 
-unsigned int Framework::CreateSprite(const float width, const float height, const char* texture, const bool isCentered)
+uint Framework::CreateSprite(const float width, const float height, const char* texture, const bool isCentered)
 {
 	Sprite* s = new Sprite;
 	s->Initialize(width, height, texture, isCentered);
@@ -66,17 +72,27 @@ unsigned int Framework::CreateSprite(const float width, const float height, cons
 	return mSpriteList.size() - 1;
 }
 
-void Framework::MoveSprite(unsigned int spriteID, const float xPosition, const float yPosition)
+void Framework::MoveSprite(uint spriteID, const float xPosition, const float yPosition)
 {
 	mSpriteList[spriteID]->SetTranslation(glm::vec3(xPosition, yPosition, 0));
 }
 
-void Framework::DrawSprite(unsigned int spriteID)
+void Framework::SetSpriteUV(const uint spriteID, const float minX, const float minY, const float maxX, const float maxY)
+{
+	mSpriteList[spriteID]->SetSpriteUV(minX, minY, maxX, maxY);
+}
+
+void Framework::SetSpriteScale(uint spriteId, float scaleX, float scaleY)
+{
+	mSpriteList[spriteId]->SetScale(scaleX, scaleY);
+}
+
+void Framework::DrawSprite(uint spriteID)
 {
 	mSpriteList[spriteID]->Draw();
 }
 
-unsigned int Framework::CreateAnimation(const float width, const float height, const char* spriteSheetDataFile)
+uint Framework::CreateAnimation(const float width, const float height, const char* spriteSheetDataFile)
 {
 	Animation* anim = new Animation;
 	anim->Initialize(width, height, spriteSheetDataFile);
@@ -84,12 +100,24 @@ unsigned int Framework::CreateAnimation(const float width, const float height, c
 	return mAnimationList.size() - 1;
 }
 
-void Framework::MoveAnimation(unsigned int animationID, float xPosition, float yPosition)
+void Framework::AnimationFlipDirection(uint animationId)
+{
+	mAnimationList[animationId]->SwitchDirection();
+}
+
+void Framework::SetAnimationState(const uint animationId, const char* a_state)
+{
+	mAnimationList[animationId]->mAnimationState = a_state;
+	if (a_state == "idle")
+		mAnimationList[animationId]->mCurrentFrame = 0;
+}
+
+void Framework::MoveAnimation(uint animationID, float xPosition, float yPosition)
 {
 	mAnimationList[animationID]->mSprite.SetTranslation(glm::vec3(xPosition, yPosition, 0));
 }
 
-void Framework::DrawAnimation(unsigned int animationID)
+void Framework::DrawAnimation(uint animationID)
 {
 	mAnimationList[animationID]->Update(GetDeltaTime());
 	mAnimationList[animationID]->Draw();
@@ -118,6 +146,12 @@ void Framework::ClearScreen()
 {
 	glClearColor(mBackgroundColor.r, mBackgroundColor.g, mBackgroundColor.b, mBackgroundColor.a);
 	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+bool Framework::IsKeyDown(KEY_CODE a_key)
+{
+	return glfwGetKey(mWindow, a_key);
+
 }
 
 double Framework::GetDeltaTime()

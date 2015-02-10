@@ -187,7 +187,7 @@ struct Sprite
 		UpdateTransform();
 	}
 
-	void SetUV(float minX, float minY, float maxX, float maxY)
+	void SetSpriteUV(float minX, float minY, float maxX, float maxY)
 	{
 
 		//top-left
@@ -215,6 +215,12 @@ struct Sprite
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
+	void SetScale(const float scaleX, const float scaleY)
+	{
+		scale.x = scaleX;
+		scale.y = scaleY;
+		UpdateTransform();
+	}
 	void Draw()
 	{
 		//set state

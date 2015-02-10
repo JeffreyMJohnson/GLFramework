@@ -1,0 +1,7 @@
+<atlas>
+<common sheet="ground_textures.png" sheetWidth="512" sheetHeight="512"/>
+	<SubTexture name="block.png" x="0" y="194" width="192" height="192"/>
+	<SubTexture name="hill.png" x="0" y="0" width="320" height="192"/>
+	<SubTexture name="platform_long.png" x="0" y="388" width="192" height="32"/>
+	<SubTexture name="platform_short.png" x="0" y="422" width="64" height="32"/>
+</atlas>

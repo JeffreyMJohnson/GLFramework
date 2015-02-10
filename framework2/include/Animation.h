@@ -28,8 +28,8 @@ public:
 	{
 		mCurrentFrame = 0;
 		mDirection = 1.0f;
-		mAnimationState = "walk";
-		//mAnimationState = "idle";
+		//mAnimationState = "walk";
+		mAnimationState = "idle";
 	}
 
 	void Initialize(const float width, const float height, const char* spriteSheetDataFile)
@@ -81,7 +81,7 @@ public:
 				mCurrentFrame++;
 			}
 		}
-		mSprite.SetUV(mFrameData[mAnimationState][mCurrentFrame].UV.x, mFrameData[mAnimationState][mCurrentFrame].UV.y, mFrameData[mAnimationState][mCurrentFrame].UV.z, mFrameData[mAnimationState][mCurrentFrame].UV.w);
+		mSprite.SetSpriteUV(mFrameData[mAnimationState][mCurrentFrame].UV.x, mFrameData[mAnimationState][mCurrentFrame].UV.y, mFrameData[mAnimationState][mCurrentFrame].UV.z, mFrameData[mAnimationState][mCurrentFrame].UV.w);
 	}
 
 	void SwitchDirection()
@@ -99,7 +99,7 @@ public:
 	std::string GetPath(const char* spriteSheetDataFile)
 	{
 		std::string s(spriteSheetDataFile);
-		unsigned int pos = s.find_last_of("\\");
+		uint pos = s.find_last_of("\\");
 		if (pos == std::string::npos)
 			return "";
 		return s.substr(0, pos + 1);

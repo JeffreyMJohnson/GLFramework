@@ -13,6 +13,16 @@
 
 #include <vector>
 
+enum KEY_CODE
+{
+	A = GLFW_KEY_A,
+	S = GLFW_KEY_S,
+	D = GLFW_KEY_D,
+	W = GLFW_KEY_W,
+	SPACE = GLFW_KEY_SPACE,
+	ESC = GLFW_KEY_ESCAPE
+};
+
 class Framework
 {
 public:
@@ -21,13 +31,17 @@ public:
 	bool UpdateFramework();
 
 
-	unsigned int CreateSprite(const float width, const float height, const char* texture, const bool isCentered);
-	void MoveSprite(unsigned int spriteID, const float xPosition, const float yPosition);
-	void DrawSprite(unsigned int spriteID);
+	uint CreateSprite(const float width, const float height, const char* texture, const bool isCentered);
+	void SetSpriteUV(const uint spriteID, const float minX, const float minY, const float maxX, const float maxY);
+	void SetSpriteScale(uint spriteId, float scaleX, float scaleY);
+	void MoveSprite(uint spriteID, const float xPosition, const float yPosition);
+	void DrawSprite(uint spriteID);
 
-	unsigned int CreateAnimation(const float width, const float height, const char* spriteSheetDataFile);
-	void MoveAnimation(unsigned int animationID, float xPosition, float yPosition);
-	void DrawAnimation(unsigned int animationID);
+	uint CreateAnimation(const float width, const float height, const char* spriteSheetDataFile);
+	void AnimationFlipDirection(uint animationId);
+	void SetAnimationState(const uint animationId, const char* a_state);
+	void MoveAnimation(uint animationID, float xPosition, float yPosition);
+	void DrawAnimation(uint animationID);
 
 	void DrawText(const char* text, const float xPosition, float yPosition);
 
@@ -40,6 +54,8 @@ public:
 	Call beginning of main game loop to clear the screen each frame.
 	*/
 	void ClearScreen();
+
+	bool IsKeyDown(KEY_CODE a_key);
 
 	double GetDeltaTime();
 	double GetTotalTime();

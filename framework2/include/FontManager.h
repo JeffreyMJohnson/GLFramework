@@ -32,7 +32,7 @@ public:
 			FontChar chInfo = mFont.Chars[currentChar];
 			mCharSprite.scale = glm::vec3(chInfo.width * scale, chInfo.height * scale, 1);
 			mCharSprite.UpdateTransform();
-			mCharSprite.SetUV(chInfo.UV.x, chInfo.UV.y, chInfo.UV.z, chInfo.UV.w);
+			mCharSprite.SetSpriteUV(chInfo.UV.x, chInfo.UV.y, chInfo.UV.z, chInfo.UV.w);
 			mCharSprite.Draw();
 			cursorPosition += glm::vec2(chInfo.xAdvance, 0) * scale;
 		}
