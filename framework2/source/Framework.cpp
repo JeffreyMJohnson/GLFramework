@@ -92,6 +92,11 @@ void Framework::DrawSprite(uint spriteID)
 	mSpriteList[spriteID]->Draw();
 }
 
+Sprite& Framework::GetSprite(uint spriteID)
+{
+	return *mSpriteList[spriteID];
+}
+
 uint Framework::CreateAnimation(const float width, const float height, const char* spriteSheetDataFile)
 {
 	Animation* anim = new Animation;

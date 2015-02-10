@@ -36,6 +36,7 @@ public:
 	void SetSpriteScale(uint spriteId, float scaleX, float scaleY);
 	void MoveSprite(uint spriteID, const float xPosition, const float yPosition);
 	void DrawSprite(uint spriteID);
+	Sprite& GetSprite(uint spriteID);
 
 	uint CreateAnimation(const float width, const float height, const char* spriteSheetDataFile);
 	void AnimationFlipDirection(uint animationId);

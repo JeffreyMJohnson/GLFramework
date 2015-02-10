@@ -9,6 +9,10 @@
 
 //#include "Sprite.h"
 #include "Framework.h"
+#include "Player.h"
+
+#define Abs(x) ((x) < 0 ? -(x) : (x))
+#define Max(a, b) ((a) > (b) ? (a) : (b))
 
 struct vec2
 {
@@ -20,29 +24,33 @@ struct vec2
 
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
+const float TOLERANCE = .0001f;
 
 GLFWwindow* window;
 double totalTime;
 double deltaTime;
 bool quit = false;
 
-float gravity = 35	;
+float gravity = 35;
 
-uint player;
-vec2 playerPosition;
-vec2 playerSize;
-vec2 playerVelocity;
+//uint player;
+//vec2 playerPosition;
+//vec2 playerSize;
+//vec2 playerVelocity;
 float playerMoveSpeed = 100;
 float playerJumpVelocity = 1000;
-int playerDirection = 1;
-bool playerOnGround = false;
-bool playerIsJumping = false;
+//int playerDirection = 1;
+//bool playerOnGround = false;
+//bool playerIsJumping = false;
+Player player;
+
 
 void Initialize();
 void Destroy();
-void HandleUI();
+void HandleUI(uint a_spriteID);
 void ResetDeltaTime();
 bool IsPlayerCollided();
+bool RelDiff(float lhs, float rhs);
 
 //debug
 int animFrame = 1;
@@ -66,54 +74,76 @@ int main()
 
 	uint platform = frk.CreateSprite(192, 32, ".\\resources\\images\\platform_long.png", true);
 	frk.MoveSprite(platform, 800, 200);
-	
-	playerPosition.x = 100;
-	playerPosition.y = 115;
-	playerSize.x = 100;
-	playerSize.y = 100;
-	playerVelocity.x = 0;
-	playerVelocity.y = 0;
-	player = frk.CreateAnimation(playerSize.x, playerSize.y, ".\\resources\\images\\smurf_sprite.xml");
-	frk.MoveAnimation(player, playerPosition.x, playerPosition.y);
+
+
+	player.mSpriteID = frk.CreateAnimation(player.mSize.x, player.mSize.y, ".\\resources\\images\\smurf_sprite.xml");
+	frk.MoveAnimation(player.mSpriteID, player.mPosition.x, player.mPosition.y);
 
 	
+
+
 	do{
 		float deltaTime = frk.GetDeltaTime();
 		frk.ClearScreen();
+
+		frk.DrawText("I am a User Interface", SCREEN_WIDTH * .5, SCREEN_HEIGHT * .95);
 
 		frk.DrawSprite(ground);
 
 		frk.DrawSprite(platform);
 
-		if (!IsPlayerCollided())
-			playerPosition.y -= gravity * deltaTime;
+		if (player.mVelocity.y > 0 || !player.IsCollided(frk.GetSprite(ground)))
+			player.mVelocity.y -= 10;
+		else
+			player.mVelocity.y = 0;
 
-		frk.MoveAnimation(player, playerPosition.x += playerVelocity.x * deltaTime, 
-			playerPosition.y += playerVelocity.y * deltaTime);
-		frk.DrawAnimation(player);
+		if (player.mVelocity.x > 0)
+		{
+			player.mVelocity.x -= 5;
+			frk.SetAnimationState(player.mSpriteID, "walk");
+		}
+		else if (player.mVelocity.x < 0)
+		{
+			player.mVelocity.x += 5;
+			frk.SetAnimationState(player.mSpriteID, "walk");
+		}
+		else if (RelDiff(player.mVelocity.x, 0.0f) <= TOLERANCE)
+		{
+			player.mVelocity.y = 0;
+			frk.SetAnimationState(player.mSpriteID, "idle");
+		}
 
-		HandleUI();
+
+		frk.MoveAnimation(player.mSpriteID, player.mPosition.x += player.mVelocity.x * deltaTime,
+			player.mPosition.y += player.mVelocity.y * deltaTime);
+		frk.DrawAnimation(player.mSpriteID);
+
+		HandleUI(ground);
 
 	} while (frk.UpdateFramework() && !quit);
 
 	frk.Shutdown();
 
-	return 0; 
+	return 0;
 }
 
-bool IsPlayerCollided()
+bool RelDiff(float lhs, float rhs)
 {
-	if (playerPosition.y - (playerSize.y * .5) < 16)
+	float c = Abs(lhs);
+	float d = Abs(rhs);
+
+	d = Max(c, d);
+	return d == 0.0 ? 0.0 : Abs((lhs - rhs)) / d;
+}
+
+void HandleUI(uint a_spriteID)
+{
+
+	if (frk.IsKeyDown(SPACE))
 	{
-		frk.MoveAnimation(player, 32, playerPosition.y);
-		playerIsJumping = false;
-		return true;
+		player.mVelocity.y = 1000;
 	}
-	return false;
-}
 
-void HandleUI()
-{
 	if (frk.IsKeyDown(ESC))
 	{
 		quit = true;
@@ -121,46 +151,27 @@ void HandleUI()
 
 	if (frk.IsKeyDown(A))
 	{
-		if (playerDirection == 1)
+		if (player.mDirection == 1)
 		{
-			playerDirection = -1;
-			frk.AnimationFlipDirection(player);
-			
+			player.mDirection = -1;
+			frk.AnimationFlipDirection(player.mSpriteID);
+
 		}
-			frk.SetAnimationState(player, "walk");
+		frk.SetAnimationState(player.mSpriteID, "walk");
 		//playerPosition.x -= playerMoveSpeed * frk.GetDeltaTime();
-			playerVelocity.x = playerMoveSpeed * playerDirection;
-		//frk.MoveAnimation(player, playerPosition.x, playerPosition.y);
-		return;
-	}
-	
-	if (frk.IsKeyDown(D))
-	{
-		if (playerDirection == -1)
-		{
-			playerDirection = 1;
-			frk.AnimationFlipDirection(player);
-			
-		}
-frk.SetAnimationState(player, "walk");
-		//playerPosition.x += playerMoveSpeed * playerDirection * frk.GetDeltaTime();
-playerVelocity.x = playerMoveSpeed * playerDirection;
-		//frk.MoveAnimation(player, playerPosition.x, playerPosition.y);
-		
-		return;
+		player.mVelocity.x = playerMoveSpeed * player.mDirection;
 	}
 
-	if (frk.IsKeyDown(SPACE))
+	if (frk.IsKeyDown(D))
 	{
-		if (!playerOnGround)
+		if (player.mDirection == -1)
 		{
-			playerIsJumping = true;
-			
+			player.mDirection = 1;
+			frk.AnimationFlipDirection(player.mSpriteID);
 		}
-		playerVelocity.y = playerJumpVelocity;
+		frk.SetAnimationState(player.mSpriteID, "walk");
+		player.mVelocity.x = playerMoveSpeed * player.mDirection;
+
 	}
-	frk.SetAnimationState(player, "idle");
-	playerVelocity.x = 0;
-	playerVelocity.y = 0; 
 
 }
