@@ -33,16 +33,12 @@ bool quit = false;
 
 float gravity = 35;
 
-//uint player;
-//vec2 playerPosition;
-//vec2 playerSize;
-//vec2 playerVelocity;
+
 float playerMoveSpeed = 100;
 float playerJumpVelocity = 1000;
-//int playerDirection = 1;
-//bool playerOnGround = false;
-//bool playerIsJumping = false;
+
 Player player;
+uint ground;
 
 
 void Initialize();
@@ -109,7 +105,7 @@ int main()
 		}
 		else if (RelDiff(player.mVelocity.x, 0.0f) <= TOLERANCE)
 		{
-			player.mVelocity.y = 0;
+			player.mVelocity.x = 0;
 			frk.SetAnimationState(player.mSpriteID, "idle");
 		}
 
@@ -139,7 +135,7 @@ bool RelDiff(float lhs, float rhs)
 void HandleUI(uint a_spriteID)
 {
 
-	if (frk.IsKeyDown(SPACE))
+	if (frk.IsKeyDown(SPACE) && player.IsCollided(frk.GetSprite(ground)))
 	{
 		player.mVelocity.y = 1000;
 	}
