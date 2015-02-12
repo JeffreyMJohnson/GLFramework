@@ -1,6 +1,6 @@
 #include "glm\glm.hpp"
 
-typedef unsigned int uint;
+
 class FontChar
 {
 public:

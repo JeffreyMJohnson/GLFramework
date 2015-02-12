@@ -21,6 +21,8 @@
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 
+typedef unsigned int uint;
+
 struct Sprite
 {
 	GLFWwindow* window;
@@ -65,8 +67,6 @@ struct Sprite
 
 	void Initialize(float a_width, float a_height, const char* texturePath, bool centeredOrigin)
 	{
-
-
 
 		//shaderProgram = a_shaderProgram;
 		CreateShaderProgram();
@@ -174,11 +174,6 @@ struct Sprite
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-	void Update()
-	{
-
 	}
 
 	void SetTranslation(const glm::vec3 a_Translation)

@@ -7,7 +7,6 @@
 
 #include <time.h>
 
-//#include "Sprite.h"
 #include "Framework.h"
 #include "Player.h"
 
@@ -19,8 +18,6 @@ struct vec2
 	float x = 0.0f;
 	float y = 0.0f;
 };
-
-//#include "pugixml\pugixml.hpp"
 
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
@@ -48,17 +45,15 @@ void ResetDeltaTime();
 bool IsPlayerCollided();
 bool RelDiff(float lhs, float rhs);
 
-//debug
-int animFrame = 1;
 Font font;
 
 Framework frk;
 
 typedef unsigned int uint;
 
-
 int main()
 {
+
 	frk.Initialize(MNF::Globals::SCREEN_WIDTH, MNF::Globals::SCREEN_HEIGHT, "Framework Test");
 	frk.SetBackgroundColor(.482, .698, 1, 1);
 
@@ -74,8 +69,6 @@ int main()
 
 	player.mSpriteID = frk.CreateAnimation(player.mSize.x, player.mSize.y, ".\\resources\\images\\smurf_sprite.xml");
 	frk.MoveAnimation(player.mSpriteID, player.mPosition.x, player.mPosition.y);
-
-	
 
 
 	do{

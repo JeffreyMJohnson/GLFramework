@@ -64,6 +64,19 @@ bool Framework::UpdateFramework()
 	return !(glfwWindowShouldClose(mWindow));
 }
 
+/*
+Create and initialize a sprite of given width and height, given texture applied.  The Sprite's origin is either 
+centered or in lower left depending on given boolean value.
+
+params:
+width: width of the sprite
+height: height of the sprite
+texture: full path and filename of texture image
+isCentered: if true sprite's origin is located in center, otherwise located bottom left position
+
+return:
+unsigned integer sprite ID
+*/
 uint Framework::CreateSprite(const float width, const float height, const char* texture, const bool isCentered)
 {
 	Sprite* s = new Sprite;
@@ -72,10 +85,18 @@ uint Framework::CreateSprite(const float width, const float height, const char* 
 	return mSpriteList.size() - 1;
 }
 
+/*
+Set the sprite's position to given value
+params:
+spriteID: id received from CreateSprite() function
+xPosition: position along X axis to move sprite
+yPosition: position along Y axis to move sprite
+*/
 void Framework::MoveSprite(uint spriteID, const float xPosition, const float yPosition)
 {
 	mSpriteList[spriteID]->SetTranslation(glm::vec3(xPosition, yPosition, 0));
 }
+
 
 void Framework::SetSpriteUV(const uint spriteID, const float minX, const float minY, const float maxX, const float maxY)
 {
