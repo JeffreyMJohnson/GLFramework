@@ -6,7 +6,8 @@
 
 #include "GLFW/glfw3.h"
 
-#include "Globals.h"
+#include "glm\glm.hpp"
+
 #include "Sprite.h"
 #include "FontManager.h"
 #include "Animation.h"

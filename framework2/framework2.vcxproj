@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Animation.h" />
+    <ClInclude Include="include\Entity.h" />
     <ClInclude Include="include\Font.h" />
     <ClInclude Include="include\FontChar.h" />
     <ClInclude Include="include\FontManager.h" />

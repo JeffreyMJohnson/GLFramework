@@ -1,8 +1,4 @@
-#define GLEW_STATIC
-#include "GL/glew.h"
-
-#include "GLFW/glfw3.h"
-#include "SOIL/SOIL.h"
+#include "Globals.h"
 #include <string>
 
 #include <time.h>
@@ -13,11 +9,11 @@
 #define Abs(x) ((x) < 0 ? -(x) : (x))
 #define Max(a, b) ((a) > (b) ? (a) : (b))
 
-struct vec2
-{
-	float x = 0.0f;
-	float y = 0.0f;
-};
+//struct vec2
+//{
+//	float x = 0.0f;
+//	float y = 0.0f;
+//};
 
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
@@ -53,6 +49,7 @@ typedef unsigned int uint;
 
 int main()
 {
+
 
 	frk.Initialize(MNF::Globals::SCREEN_WIDTH, MNF::Globals::SCREEN_HEIGHT, "Framework Test");
 	frk.SetBackgroundColor(.482, .698, 1, 1);

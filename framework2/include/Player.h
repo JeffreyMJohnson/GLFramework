@@ -1,16 +1,12 @@
-#include "glm\glm.hpp"
-#include "Animation.h"
+#include "Entity.h"
 #include <math.h>
 
 class Player
-	:public Animation
+	:public Entity
 {
 public:
 	const char* mAnimationDescriptionFile = "smurf_sprite.xml";
-	unsigned int mSpriteID;
-	glm::vec2 mSize;
-	glm::vec2 mPosition;
-	glm::vec2 mVelocity;
+	vec2 mVelocity;
 	float mGravity;
 	int mDirection;
 	bool mOnGround;
@@ -18,9 +14,9 @@ public:
 
 	Player()
 	{
-		mSize = glm::vec2(100, 100);
-		mPosition = glm::vec2(100, 115);
-		mVelocity = glm::vec2(0, 0);
+		mSize = vec2(100, 100);
+		mPosition = vec2(100, 115);
+		mVelocity = vec2(0, 0);
 		mGravity = 35;
 		mDirection = 1;
 		mOnGround = false;
