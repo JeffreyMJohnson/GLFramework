@@ -14,14 +14,21 @@ public:
 
 	Player()
 	{
-		mSize = vec2(100, 100);
-		mPosition = vec2(100, 115);
+		/*mSize = vec2(100, 100);
+		mPosition = vec2(100, 115);*/
 		mVelocity = vec2(0, 0);
 		mGravity = 35;
 		mDirection = 1;
 		mOnGround = false;
 		mJumping = false;
 	}
+
+	//void Init(Framework& framework, const vec2& size, const vec2& position, const char* animDescriptionFile)
+	//{
+	//	Entity::Init(framework, size, position);
+	//	mSpriteID = frk.CreateAnimation(size.x, size.y, animDescriptionFile);
+	//	frk.MoveAnimation(mSpriteID, position.x, position.y);
+	//}
 
 	void Update(float timeDelta)
 	{

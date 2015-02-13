@@ -27,6 +27,7 @@ enum KEY_CODE
 class Framework
 {
 public:
+	Framework(){};
 	void Initialize(const int screenWidth, const int screenHeight, const char* title);
 	void Shutdown();
 	bool UpdateFramework();
