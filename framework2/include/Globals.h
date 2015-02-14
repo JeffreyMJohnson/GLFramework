@@ -36,6 +36,15 @@ namespace MNF
 			return true;
 		}
 	};
+
+	class Utils
+	{
+	public:
+		static bool Equalsf(float lhs, float rhs, float delta)
+		{
+			return (fabs(lhs - rhs) < delta);
+		}
+	};
 }
 
 #endif

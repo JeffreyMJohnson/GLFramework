@@ -6,6 +6,10 @@ class Platform
 public:
 	const char* mTextureFile;
 
+	Platform()
+	{
+	}
+
 	void Update(float deltaTime)
 	{
 

@@ -13,6 +13,7 @@ public:
 	vec2 mPosition = vec2(0, 0);
 	vec2 mColliderBoxMin = vec2(0, 0);
 	vec2 mColliderBoxMax = vec2(0, 0);
+	vec2 mColliderOffset = vec2(.5f, .5f);
 
 
 	void Init(const vec2& size, const vec2& position)
@@ -24,17 +25,17 @@ public:
 
 	void UpdateCollider()
 	{
-		mColliderBoxMin = mPosition - (mSize * .5f);
-		mColliderBoxMax = mPosition + (mSize * .5f);
+		mColliderBoxMin = mPosition - (mSize * mColliderOffset);
+		mColliderBoxMax = mPosition + (mSize * mColliderOffset);
 	}
 
-	bool NewIsCollided(Entity& otherEntity)
+	bool IsCollided(Entity& otherEntity)
 	{ 
 		return MNF::Collider::AABB(mColliderBoxMin, mColliderBoxMax, otherEntity.mColliderBoxMin, otherEntity.mColliderBoxMax);
 	}
 
-	virtual void Update(float deltaTime) = 0;
-	virtual void Draw() = 0;
+	virtual void Update(float deltaTime){};
+	virtual void Draw(){};
 
 
 };

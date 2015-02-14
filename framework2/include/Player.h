@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "Platform.h"
 #include <math.h>
 
 class Player
@@ -6,6 +7,7 @@ class Player
 {
 public:
 	const char* mAnimationDescriptionFile = "smurf_sprite.xml";
+	char* mCurrentAnimationState;
 	vec2 mVelocity;
 	float mGravity;
 	int mDirection;
@@ -21,18 +23,61 @@ public:
 		mDirection = 1;
 		mOnGround = false;
 		mJumping = false;
+		mCurrentAnimationState = "idle";
 	}
-
-	//void Init(Framework& framework, const vec2& size, const vec2& position, const char* animDescriptionFile)
-	//{
-	//	Entity::Init(framework, size, position);
-	//	mSpriteID = frk.CreateAnimation(size.x, size.y, animDescriptionFile);
-	//	frk.MoveAnimation(mSpriteID, position.x, position.y);
-	//}
 
 	void Update(float timeDelta)
 	{
 
+	}
+
+	void Update(float timeDelta, std::vector<Platform>& platformList)
+	{
+		bool isCollided = CheckPlatformCollision(platformList);
+
+		if (!isCollided)
+		{
+			//not colliding 
+			mVelocity.y -= 10;
+		}
+		else 
+		{
+			//colliding and on ground
+			if (mOnGround)
+			{
+				mJumping = false;
+				mVelocity.y = 0;
+			}
+			else
+			{
+				//colliding not on ground
+				mVelocity = vec2(0, -10);
+			}
+			
+		}		
+
+		if (mVelocity.x > 0)
+		{
+			mVelocity.x -= 5;
+			mCurrentAnimationState = "walk";
+			//frk.SetAnimationState(mSpriteID, "walk");
+		}
+		else if (mVelocity.x < 0)
+		{
+			mVelocity.x += 5;
+			mCurrentAnimationState = "walk";
+			//frk.SetAnimationState(mSpriteID, "walk");
+		}
+		else if (MNF::Utils::Equalsf(mVelocity.x, 0.0f, .001))
+		{
+			mVelocity.x = 0;
+			mCurrentAnimationState = "idle";
+			//frk.SetAnimationState(mSpriteID, "idle");
+		}
+
+		/*frk.MoveAnimation(mSpriteID, mPosition.x += mVelocity.x * deltaTime,
+			mPosition.y += mVelocity.y * deltaTime);*/
+		UpdateCollider();
 	}
 
 	void Draw()
@@ -40,13 +85,25 @@ public:
 		
 	}
 
-	bool IsCollided(Sprite& a_sprite)
+	bool IsCollided(Entity& otherEntity)
 	{
-		if (mPosition.y - (mSize.y * .5) < a_sprite.scale.y * .5)
+		mOnGround = false;
+		bool r = MNF::Collider::AABB(mColliderBoxMin, mColliderBoxMax, otherEntity.mColliderBoxMin, otherEntity.mColliderBoxMax);
+		if (r)
 		{
-			return true;
+			//check if platform
+			Platform* p = dynamic_cast<Platform*>(&otherEntity);
+			if (p != nullptr)
+			{
+				//if on top of platform with bottom of player set 
+				if (mColliderBoxMin.y < p->mColliderBoxMax.y)
+				{
+					mOnGround = true;
+				}
+			}
+
 		}
-		return false;
+		return r;
 	}
 
 	bool Equalsf(float lhs, float rhs, float delta)
@@ -54,7 +111,15 @@ public:
 		return (fabs(lhs - rhs) < delta);
 	}
 
-
+	bool CheckPlatformCollision(std::vector<Platform>& platformList)
+	{
+		for (std::vector<Platform>::iterator it = platformList.begin(); it != platformList.end(); it++)
+		{
+			if (IsCollided((*it)))
+				return true;
+		}
+		return false;
+	}
 
 
 
