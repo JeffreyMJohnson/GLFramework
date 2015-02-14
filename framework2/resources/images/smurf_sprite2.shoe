@@ -1,0 +1,23 @@
+<TextureAtlas imagePath="smurf_sprite2.png" sheetWidth="512" sheetHeight="512">
+    <frames name="walk">
+        <SubTexture name="slice01_01.png" x="0" y="125" width="71" height="120"/>
+        <SubTexture name="slice02_02.png" x="72" y="369" width="68" height="120"/>
+        <SubTexture name="slice03_03.png" x="142" y="125" width="64" height="120"/>
+        <SubTexture name="slice04_04.png" x="207" y="370" width="63" height="120"/>
+        <SubTexture name="slice05_05.png" x="209" y="0" width="63" height="122"/>
+        <SubTexture name="slice06_06.png" x="142" y="0" width="65" height="123"/>
+        <SubTexture name="slice07_07.png" x="0" y="247" width="70" height="123"/>
+        <SubTexture name="slice08_08.png" x="0" y="0" width="71" height="123"/>
+        <SubTexture name="slice09_09.png" x="0" y="372" width="70" height="123"/>
+        <SubTexture name="slice10_10.png" x="73" y="0" width="67" height="123"/>
+        <SubTexture name="slice11_11.png" x="142" y="369" width="63" height="123"/>
+        <SubTexture name="slice12_12.png" x="207" y="247" width="63" height="121"/>
+        <SubTexture name="slice13_13.png" x="272" y="247" width="63" height="119"/>
+        <SubTexture name="slice14_14.png" x="208" y="125" width="63" height="120"/>
+        <SubTexture name="slice15_15.png" x="73" y="125" width="67" height="120"/>
+        <SubTexture name="slice16_16.png" x="72" y="247" width="70" height="120"/>
+    </frames>
+    <frames name="idle">
+        <SubTexture name="slice01_01.png" x="0" y="125" width="71" height="120"/>
+    </frames>
+</TextureAtlas>

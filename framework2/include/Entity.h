@@ -13,7 +13,7 @@ public:
 	vec2 mPosition = vec2(0, 0);
 	vec2 mColliderBoxMin = vec2(0, 0);
 	vec2 mColliderBoxMax = vec2(0, 0);
-	vec2 mColliderOffset = vec2(.5f, .5f);
+	vec2 mColliderOffset = vec2(.50f, .5f);
 
 
 	void Init(const vec2& size, const vec2& position)

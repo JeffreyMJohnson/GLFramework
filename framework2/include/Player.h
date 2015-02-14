@@ -31,7 +31,7 @@ public:
 
 	}
 
-	void Update(float timeDelta, std::vector<Platform>& platformList)
+	void Update(float timeDelta, std::vector<Platform*>& platformList)
 	{
 		bool isCollided = CheckPlatformCollision(platformList);
 
@@ -51,18 +51,18 @@ public:
 			else
 			{
 				//colliding not on ground
-				mVelocity = vec2(0, -10);
+				mVelocity = vec2(0,-100);
 			}
 			
 		}		
 
-		if (mVelocity.x > 0)
+		if (mVelocity.x > 0 && !mJumping)
 		{
 			mVelocity.x -= 5;
 			mCurrentAnimationState = "walk";
 			//frk.SetAnimationState(mSpriteID, "walk");
 		}
-		else if (mVelocity.x < 0)
+		else if (mVelocity.x < 0 && !mJumping)
 		{
 			mVelocity.x += 5;
 			mCurrentAnimationState = "walk";
@@ -74,10 +74,6 @@ public:
 			mCurrentAnimationState = "idle";
 			//frk.SetAnimationState(mSpriteID, "idle");
 		}
-
-		/*frk.MoveAnimation(mSpriteID, mPosition.x += mVelocity.x * deltaTime,
-			mPosition.y += mVelocity.y * deltaTime);*/
-		UpdateCollider();
 	}
 
 	void Draw()
@@ -96,8 +92,10 @@ public:
 			if (p != nullptr)
 			{
 				//if on top of platform with bottom of player set 
-				if (mColliderBoxMin.y < p->mColliderBoxMax.y)
+				if (mColliderBoxMin.y < p->mColliderBoxMax.y && mColliderBoxMax.y > p->mColliderBoxMax.y
+					&& mColliderBoxMin.x > p->mColliderBoxMin.x && mColliderBoxMax.x < p->mColliderBoxMax.x)
 				{
+					//mPosition.y = p->mColliderBoxMax.y;
 					mOnGround = true;
 				}
 			}
@@ -111,11 +109,11 @@ public:
 		return (fabs(lhs - rhs) < delta);
 	}
 
-	bool CheckPlatformCollision(std::vector<Platform>& platformList)
+	bool CheckPlatformCollision(std::vector<Platform*>& platformList)
 	{
-		for (std::vector<Platform>::iterator it = platformList.begin(); it != platformList.end(); it++)
+		for (std::vector<Platform*>::iterator it = platformList.begin(); it != platformList.end(); it++)
 		{
-			if (IsCollided((*it)))
+			if (IsCollided(*(*it)))
 				return true;
 		}
 		return false;

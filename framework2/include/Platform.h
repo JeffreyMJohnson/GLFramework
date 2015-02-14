@@ -8,6 +8,8 @@ public:
 
 	Platform()
 	{
+		mColliderOffset.x = .6;
+		UpdateCollider();
 	}
 
 	void Update(float deltaTime)
