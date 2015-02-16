@@ -1,3 +1,5 @@
+#ifndef _PLATFORM_H_
+#define _PLATFORM_H_
 #include "Entity.h"
 
 class Platform
@@ -22,3 +24,4 @@ public:
 
 	}
 };
+#endif

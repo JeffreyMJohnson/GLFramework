@@ -1,6 +1,10 @@
-#include "Entity.h"
-#include "Platform.h"
+#ifndef _PLAYER_H_
+#define _PLAYER_H_
+
+#include "MovingPlatform.h"
 #include <math.h>
+
+class MovingPlatform;
 
 class Player
 	:public Entity
@@ -30,9 +34,10 @@ public:
 	{
 
 	}
-
+	bool isMovingPlatform = false;
 	void Update(float timeDelta, std::vector<Platform*>& platformList)
 	{
+		
 		bool isCollided = CheckPlatformCollision(platformList);
 
 
@@ -45,10 +50,15 @@ public:
 		else 
 		{
 			//colliding and on ground
-			if (mOnGround)
+			if (mOnGround && !isMovingPlatform)
 			{
 				mJumping = false;
 				mVelocity.y = 0;
+			}
+			else if (mOnGround && isMovingPlatform)
+			{
+				mJumping = false;
+
 			}
 			else
 			{
@@ -106,6 +116,7 @@ public:
 	bool IsCollided(Entity& otherEntity)
 	{
 		mOnGround = false;
+		isMovingPlatform = false;
 		bool r = MNF::Collider::AABB(mColliderBoxMin, mColliderBoxMax, otherEntity.mColliderBoxMin, otherEntity.mColliderBoxMax);
 		if (r)
 		{
@@ -117,7 +128,11 @@ public:
 				if (mColliderBoxMin.y < p->mColliderBoxMax.y && mColliderBoxMax.y > p->mColliderBoxMax.y
 					&& mColliderBoxMin.x > p->mColliderBoxMin.x && mColliderBoxMax.x < p->mColliderBoxMax.x)
 				{
-					//mPosition.y = p->mColliderBoxMax.y;
+					if (dynamic_cast<MovingPlatform*>(&otherEntity))
+					{
+						isMovingPlatform = true;
+						mPosition.y = p->mColliderBoxMax.y + mSize.y * .45;
+					}
 					mOnGround = true;
 				}
 			}
@@ -136,7 +151,10 @@ public:
 		for (std::vector<Platform*>::iterator it = platformList.begin(); it != platformList.end(); it++)
 		{
 			if (IsCollided(*(*it)))
+			{
 				return true;
+			}
+				
 		}
 		return false;
 	}
@@ -145,3 +163,5 @@ public:
 
 
 };
+
+#endif

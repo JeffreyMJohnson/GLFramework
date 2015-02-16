@@ -1,3 +1,5 @@
+#ifndef _ANIMATION_H_
+#define _ANIMATION_H_
 #pragma once
 
 #include "pugixml\pugixml.hpp"
@@ -145,3 +147,5 @@ public:
 	}
 
 };
+
+#endif

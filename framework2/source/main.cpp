@@ -7,6 +7,7 @@
 
 #include "Framework.h"
 #include "Player.h"
+#include "Platform.h"
 #include "MovingPlatform.h"
 
 
@@ -61,7 +62,9 @@ int main()
 
 	LoadPlatforms();
 
-	player.Init(vec2(100, 100), vec2(100, 200));
+	//debug
+	//player.Init(vec2(100, 100), vec2(100, 200));
+	player.Init(vec2(100, 100), vec2(350, 500));
 	player.mColliderOffset = vec2(.25, .45);
 	player.mSpriteID = frk.CreateAnimation(player.mSize.x, player.mSize.y, ".\\resources\\images\\smurf_sprite.xml");
 	frk.MoveAnimation(player.mSpriteID, player.mPosition.x, player.mPosition.y);
@@ -151,7 +154,7 @@ void LoadPlatforms()
 	platformList.push_back(lvlD3);
 
 	MovingPlatform* mPlat = new MovingPlatform;
-	mPlat->Init(vec2(150, 32), vec2(500, 300));
+	mPlat->Init(vec2(150, 32), vec2(300, 300));
 	mPlat->mStopPositionMin = vec2(300, 400);
 	mPlat->mStopPositionMax = vec2(750, 300);
 	mPlat->mSpriteID = frk.CreateSprite(mPlat->mSize.x, mPlat->mSize.y, ".\\resources\\images\\platform_long.png", true);

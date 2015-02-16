@@ -1,4 +1,6 @@
-//#include "Platform.h"
+#ifndef _MOVING_PLATFORM_H_
+#define _MOVING_PLATFORM_H_
+#include "Platform.h"
 #include "glm\gtx\compatibility.hpp"
 
 class MovingPlatform
@@ -36,3 +38,5 @@ public:
 
 
 };
+
+#endif
