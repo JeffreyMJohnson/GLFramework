@@ -3,13 +3,12 @@
 
 #include <time.h>
 #include <vector>
+#include <stdio.h>
 
 #include "Framework.h"
 #include "Player.h"
 #include "MovingPlatform.h"
 
-#define Abs(x) ((x) < 0 ? -(x) : (x))
-#define Max(a, b) ((a) > (b) ? (a) : (b))
 
 //struct vec2
 //{
@@ -19,22 +18,18 @@
 
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
-const float DEBUG_TIME_DELTA = 1.0f / 100;
+const float DEBUG_TIME_DELTA = 1.0f / 350;
 
 GLFWwindow* window;
 double totalTime;
 double deltaTime;
 bool quit = false;
-bool jumpKeyPressed = false;
-
-float gravity = 35;
 
 
 float playerMoveSpeed = 250;
 float playerJumpVelocity = 500;
 
 Player player;
-//uint ground;
 
 std::vector<Platform*> platformList;
 typedef std::vector<Platform*>::iterator PlatIt;
@@ -44,12 +39,12 @@ void Destroy();
 void HandleUI();
 void ResetDeltaTime();
 bool IsPlayerCollided();
-bool RelDiff(float lhs, float rhs);
 void LoadPlatforms();
 void UpdatePlatforms(float timeDelta);
 void DrawPlatforms();
 void PlayerLogic();
 void CheckPlatformCollision();
+void ShutDown();
 
 Font font;
 
@@ -67,12 +62,13 @@ int main()
 	LoadPlatforms();
 
 	player.Init(vec2(100, 100), vec2(100, 200));
-	player.mColliderOffset = vec2(.15, .45);
+	player.mColliderOffset = vec2(.25, .45);
 	player.mSpriteID = frk.CreateAnimation(player.mSize.x, player.mSize.y, ".\\resources\\images\\smurf_sprite.xml");
 	frk.MoveAnimation(player.mSpriteID, player.mPosition.x, player.mPosition.y);
 	player.UpdateCollider();
 
-
+	char timerText[256];
+	sprintf(timerText, "%f", totalTime);
 
 	do{
 		//debug
@@ -89,34 +85,25 @@ int main()
 			player.mPosition.y += player.mVelocity.y * deltaTime);
 
 
-		frk.DrawText("I am a User Interface", SCREEN_WIDTH * .5, SCREEN_HEIGHT * .95);
+		frk.DrawText(timerText, SCREEN_WIDTH * .40, SCREEN_HEIGHT * .95);
 		
 		UpdatePlatforms(deltaTime);
 		DrawPlatforms();
 		frk.DrawAnimation(player.mSpriteID);
 		player.UpdateCollider();
-		
+		sprintf(timerText, "%05.1f", frk.GetTotalTime());
 
 	} while (frk.UpdateFramework() && !quit);
 
 	frk.Shutdown();
 
+	ShutDown();
+
 	return 0;
-}
-
-bool RelDiff(float lhs, float rhs)
-{
-	float c = Abs(lhs);
-	float d = Abs(rhs);
-
-	d = Max(c, d);
-	return d == 0.0 ? 0.0 : Abs((lhs - rhs)) / d;
 }
 
 void LoadPlatforms()
 {
-	//uint ground = frk.CreateSprite(1200, 32, ".\\resources\\images\\platform_long.png", true);
-	//frk.MoveSprite(ground, 512, 15);
 
 	Platform* groundLeft = new Platform;
 	groundLeft->Init(vec2(400, 32), vec2(100, 15));
@@ -133,19 +120,19 @@ void LoadPlatforms()
 	platformList.push_back(groundCenter);
 
 	Platform* lvlA1 = new Platform;
-	lvlA1->Init(vec2(100, 32), vec2(350, 125));
+	lvlA1->Init(vec2(125, 32), vec2(350, 100));
 	lvlA1->mSpriteID = frk.CreateSprite(lvlA1->mSize.x, lvlA1->mSize.y, ".\\resources\\images\\platform_long.png", true);
 	frk.MoveSprite(lvlA1->mSpriteID, lvlA1->mPosition.x, lvlA1->mPosition.y);
 	platformList.push_back(lvlA1);
 
 	Platform* lvlB1 = new Platform;
-	lvlB1->Init(vec2(100, 32), vec2(550, 225));
+	lvlB1->Init(vec2(125, 32), vec2(525, 150));
 	lvlB1->mSpriteID = frk.CreateSprite(lvlB1->mSize.x, lvlB1->mSize.y, ".\\resources\\images\\platform_long.png", true);
 	frk.MoveSprite(lvlB1->mSpriteID, lvlB1->mPosition.x, lvlB1->mPosition.y);
 	platformList.push_back(lvlB1);
 
 	Platform* lvlC1 = new Platform;
-	lvlC1->Init(vec2(85, 32), vec2(735, 300));
+	lvlC1->Init(vec2(125, 32), vec2(700, 200));
 	lvlC1->mSpriteID = frk.CreateSprite(lvlC1->mSize.x, lvlC1->mSize.y, ".\\resources\\images\\platform_long.png", true);
 	frk.MoveSprite(lvlC1->mSpriteID, lvlC1->mPosition.x, lvlC1->mPosition.y);
 	platformList.push_back(lvlC1);
@@ -158,15 +145,15 @@ void LoadPlatforms()
 
 
 	Platform* lvlD3 = new Platform;
-	lvlD3->Init(vec2(200, 32), vec2(950, 400));
+	lvlD3->Init(vec2(200, 32), vec2(950, 250));
 	lvlD3->mSpriteID = frk.CreateSprite(lvlD3->mSize.x, lvlD3->mSize.y, ".\\resources\\images\\platform_long.png", true);
 	frk.MoveSprite(lvlD3->mSpriteID, lvlD3->mPosition.x, lvlD3->mPosition.y);
 	platformList.push_back(lvlD3);
 
 	MovingPlatform* mPlat = new MovingPlatform;
-	mPlat->Init(vec2(100, 32), vec2(500, 400));
+	mPlat->Init(vec2(150, 32), vec2(500, 300));
 	mPlat->mStopPositionMin = vec2(300, 400);
-	mPlat->mStopPositionMax = vec2(750, 400);
+	mPlat->mStopPositionMax = vec2(750, 300);
 	mPlat->mSpriteID = frk.CreateSprite(mPlat->mSize.x, mPlat->mSize.y, ".\\resources\\images\\platform_long.png", true);
 	frk.MoveSprite(mPlat->mSpriteID, mPlat->mPosition.x, mPlat->mPosition.y);
 	platformList.push_back(mPlat);
@@ -232,4 +219,13 @@ void DrawPlatforms()
 	{
 		frk.DrawSprite((*it)->mSpriteID);
 	}
+}
+
+void ShutDown()
+{
+	for (PlatIt it = platformList.begin(); it != platformList.end(); it++)
+	{
+		delete *it;
+	}
+	platformList.clear();
 }

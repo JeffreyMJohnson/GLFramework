@@ -35,6 +35,8 @@ public:
 	{
 		bool isCollided = CheckPlatformCollision(platformList);
 
+
+
 		if (!isCollided)
 		{
 			//not colliding 
@@ -73,6 +75,26 @@ public:
 			mVelocity.x = 0;
 			mCurrentAnimationState = "idle";
 			//frk.SetAnimationState(mSpriteID, "idle");
+		}
+
+		if (mPosition.x > SCREEN_WIDTH)
+		{
+			mPosition.x = SCREEN_WIDTH;
+			mVelocity.x = 0;
+
+		}
+		if (mColliderBoxMin.x < 0)
+		{
+			mPosition.x = mSize.x * .25;
+			mVelocity.x = 0;
+			UpdateCollider();
+		}
+		if (mColliderBoxMax.x > SCREEN_WIDTH)
+		{
+			mPosition.x = SCREEN_WIDTH - mSize.x * .25;
+			mVelocity.x = 0;
+			UpdateCollider();
+
 		}
 	}
 
