@@ -25,9 +25,7 @@ void Framework::Initialize(const int screenWidth, const int screenHeight, const 
 	mFontMan.Initialize(".\\resources\\fonts\\", "arial.fnt");
 }
 
-/*
-Must be called before ending program
-*/
+
 void Framework::Shutdown()
 {
 	for (int i = 0; i < mSpriteList.size(); i++)
@@ -54,19 +52,7 @@ bool Framework::UpdateFramework()
 	return !(glfwWindowShouldClose(mWindow));
 }
 
-/*
-Create and initialize a sprite of given width and height, given texture applied.  The Sprite's origin is either 
-centered or in lower left depending on given boolean value.
 
-params:
-width: width of the sprite
-height: height of the sprite
-texture: full path and filename of texture image
-isCentered: if true sprite's origin is located in center, otherwise located bottom left position
-
-return:
-unsigned integer sprite ID
-*/
 unsigned int Framework::CreateSprite(const float width, const float height, const char* texture, const bool isCentered)
 {
 	Sprite* s = new Sprite;
@@ -75,13 +61,6 @@ unsigned int Framework::CreateSprite(const float width, const float height, cons
 	return mSpriteList.size() - 1;
 }
 
-/*
-Set the sprite's position to given value
-params:
-spriteID: id received from CreateSprite() function
-xPosition: position along X axis to move sprite
-yPosition: position along Y axis to move sprite
-*/
 void Framework::MoveSprite(unsigned int spriteID, const float xPosition, const float yPosition)
 {
 	mSpriteList[spriteID]->SetTranslation(glm::vec3(xPosition, yPosition, 0));
@@ -139,9 +118,7 @@ void Framework::DrawText(const char* text, const float xPosition, float yPositio
 	mFontMan.DrawText(text, xPosition, yPosition);
 }
 
-/*
-Set backgound color to given RGBA values.  Values are expected to be from 0 to 1.
-*/
+
 void Framework::SetBackgroundColor(const float r, const float g, const float b, const float a)
 {
 	//verify input

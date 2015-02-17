@@ -9,7 +9,6 @@ var class_framework =
     [ "DrawSprite", "class_framework.html#abc903ea7ec424b7ae32c41990e3d81db", null ],
     [ "DrawText", "class_framework.html#aa423fd95d3191586fe1d2b9c91139214", null ],
     [ "GetDeltaTime", "class_framework.html#a353765b6094eb0beb1016ffce5a76ec3", null ],
-    [ "GetSprite", "class_framework.html#a07f1e947d04c6f3643fa5586374b140a", null ],
     [ "GetTotalTime", "class_framework.html#a78b2975566003347a5e24a08cc5e6e86", null ],
     [ "Initialize", "class_framework.html#ac5dc1474faae68ec8e2e7c406d879235", null ],
     [ "IsKeyDown", "class_framework.html#ac9f69c81554231a71fbc47ba19a3d5da", null ],
