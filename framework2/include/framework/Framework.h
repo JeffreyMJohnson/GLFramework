@@ -8,9 +8,9 @@
 
 #include "glm\glm.hpp"
 
-#include "framework/Sprite.h"
-#include "framework/FontManager.h"
-#include "framework/Animation.h"
+#include "Sprite.h"
+#include "FontManager.h"
+#include "Animation.h"
 
 #include <vector>
 
@@ -101,37 +101,13 @@ public:
 	void SetSpriteScale(unsigned int spriteId, float scaleX, float scaleY);
 
 	/**
-	Move the given sprite to the given pixel position coordinates on the screen.
-	####parameters
-	`spriteID` - ID returned from `CreateSprite()` for sprite to set.\n
-	`xPosition` - position on x axis to set the sprite.\n
-	`yPosition` - position on y axis to set the sprite.\n
-	*/
-	void MoveSprite(unsigned int spriteID, const float xPosition, const float yPosition);
-
-	/**
-	Draw the given sprite on the screen.
-	####parameters
-	`spriteID` - ID returned from `CreateSprite()` for sprite to draw.\n
-	*/
-	void DrawSprite(unsigned int spriteID);
-
-	/**
-	Create an animated sprite with a given texture sprite sheet to be moved and drawn on the screen.\n
-	####parameters
-	`width` - Width of the object in pixels.\n
-	`height` - Height of the object in pixels.\n
-	`spriteSheetDataFile` - Filename of the sprite sheet description file to be used as a texture of this object. _The image will be shrunk/stretched to fit the
-	size of the object._\n
-	####returns
-	A unique animated sprite ID to be used when moving, drawing within framework.
-
-	*/
-	unsigned int CreateAnimation(const float width, const float height, const char* spriteSheetDataFile);
-
-	/**
 	
 	*/
+	void MoveSprite(unsigned int spriteID, const float xPosition, const float yPosition);
+	void DrawSprite(unsigned int spriteID);
+	Sprite& GetSprite(unsigned int spriteID);
+
+	unsigned int CreateAnimation(const float width, const float height, const char* spriteSheetDataFile);
 	void AnimationFlipDirection(unsigned int animationId);
 	void SetAnimationState(const unsigned int animationId, const char* a_state);
 	void MoveAnimation(unsigned int animationID, float xPosition, float yPosition);

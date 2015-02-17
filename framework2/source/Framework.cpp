@@ -1,8 +1,6 @@
-#include "Framework.h";
+#include "framework/Framework.h";
 
-/*
-Call to initialize framework creating a window of given width and size and given title.
-*/
+
 void Framework::Initialize(const int screenWidth, const int screenHeight, const char* title)
 {
 	glfwInit();
@@ -46,15 +44,7 @@ void Framework::Shutdown()
 	glfwTerminate();
 }
 
-/*
-Called every frame when screen is ready to be rendered.
-returns true if everything renders without an issue, else returns false.
-note: meant to be used as flag for main game loop
-e.g.
-do{
-	//insert game loop code here....
-}while(frameworkInstance.UpdateFramework)
-*/
+
 bool Framework::UpdateFramework()
 {
 	ResetDeltaTime();
@@ -77,7 +67,7 @@ isCentered: if true sprite's origin is located in center, otherwise located bott
 return:
 unsigned integer sprite ID
 */
-uint Framework::CreateSprite(const float width, const float height, const char* texture, const bool isCentered)
+unsigned int Framework::CreateSprite(const float width, const float height, const char* texture, const bool isCentered)
 {
 	Sprite* s = new Sprite;
 	s->Initialize(width, height, texture, isCentered);
@@ -92,33 +82,28 @@ spriteID: id received from CreateSprite() function
 xPosition: position along X axis to move sprite
 yPosition: position along Y axis to move sprite
 */
-void Framework::MoveSprite(uint spriteID, const float xPosition, const float yPosition)
+void Framework::MoveSprite(unsigned int spriteID, const float xPosition, const float yPosition)
 {
 	mSpriteList[spriteID]->SetTranslation(glm::vec3(xPosition, yPosition, 0));
 }
 
 
-void Framework::SetSpriteUV(const uint spriteID, const float minX, const float minY, const float maxX, const float maxY)
+void Framework::SetSpriteUV(const unsigned int spriteID, const float minX, const float minY, const float maxX, const float maxY)
 {
 	mSpriteList[spriteID]->SetSpriteUV(minX, minY, maxX, maxY);
 }
 
-void Framework::SetSpriteScale(uint spriteId, float scaleX, float scaleY)
+void Framework::SetSpriteScale(unsigned int spriteId, float scaleX, float scaleY)
 {
 	mSpriteList[spriteId]->SetScale(scaleX, scaleY);
 }
 
-void Framework::DrawSprite(uint spriteID)
+void Framework::DrawSprite(unsigned int spriteID)
 {
 	mSpriteList[spriteID]->Draw();
 }
 
-Sprite& Framework::GetSprite(uint spriteID)
-{
-	return *mSpriteList[spriteID];
-}
-
-uint Framework::CreateAnimation(const float width, const float height, const char* spriteSheetDataFile)
+unsigned int Framework::CreateAnimation(const float width, const float height, const char* spriteSheetDataFile)
 {
 	Animation* anim = new Animation;
 	anim->Initialize(width, height, spriteSheetDataFile);
@@ -126,24 +111,24 @@ uint Framework::CreateAnimation(const float width, const float height, const cha
 	return mAnimationList.size() - 1;
 }
 
-void Framework::AnimationFlipDirection(uint animationId)
+void Framework::AnimationFlipDirection(unsigned int animationId)
 {
 	mAnimationList[animationId]->SwitchDirection();
 }
 
-void Framework::SetAnimationState(const uint animationId, const char* a_state)
+void Framework::SetAnimationState(const unsigned int animationId, const char* a_state)
 {
 	mAnimationList[animationId]->mAnimationState = a_state;
 	if (a_state == "idle")
 		mAnimationList[animationId]->mCurrentFrame = 0;
 }
 
-void Framework::MoveAnimation(uint animationID, float xPosition, float yPosition)
+void Framework::MoveAnimation(unsigned int animationID, float xPosition, float yPosition)
 {
 	mAnimationList[animationID]->mSprite.SetTranslation(glm::vec3(xPosition, yPosition, 0));
 }
 
-void Framework::DrawAnimation(uint animationID)
+void Framework::DrawAnimation(unsigned int animationID)
 {
 	mAnimationList[animationID]->Update(GetDeltaTime());
 	mAnimationList[animationID]->Draw();

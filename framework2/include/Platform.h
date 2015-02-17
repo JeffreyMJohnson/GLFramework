@@ -8,20 +8,10 @@ class Platform
 public:
 	const char* mTextureFile;
 
-	Platform()
-	{
-		mColliderOffset.x = .6;
-		UpdateCollider();
-	}
+	Platform();
 
-	void Update(float deltaTime)
-	{
+	void Update(float deltaTime);
 
-	}
-
-	void Draw()
-	{
-
-	}
+	void Draw();
 };
 #endif
