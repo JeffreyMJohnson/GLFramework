@@ -178,7 +178,7 @@ public:
 	`r` - Red value from 0 to 1.\n
 	`g` - Green value from 0 to 1.\n
 	`b` - Blue value from 0 to 1.\n
-	`a` - Alpha value from 0 to 1. __note: 0 is totally transparent, while 1 equates total opacity.
+	`a` - Alpha value from 0 to 1. __note: 0 is totally transparent, while 1 equates total opacity.__
 	*/
 	void SetBackgroundColor(const float r, const float g, const float b, const float a);
 
