@@ -131,28 +131,79 @@ public:
 	unsigned int CreateAnimation(const float width, const float height, const char* spriteSheetDataFile);
 
 	/**
-	
+	Flip the direction of the given animated sprite along y axis.
+	####parameters
+	`animationId` - ID returned from `CreateAnimation()`
 	*/
 	void AnimationFlipDirection(unsigned int animationId);
+
+	/**
+	Set the gievn animation's animation state.
+	####parameters
+	`animationId` - ID returned from `CreateAnimation()`.
+	`a_state` - The animation state to set.
+	*/
 	void SetAnimationState(const unsigned int animationId, const char* a_state);
+
+	/**
+	Set the given animation's position on the screen in pixels.
+	####parameters
+	`animationId` - ID returned from `CreateAnimation()`.\n
+	`xPosition` - Position on x axis to set the animation in pixels.\n
+	`yPosition` - Position on y axis to set the animation in pixels.\n
+	*/
 	void MoveAnimation(unsigned int animationID, float xPosition, float yPosition);
+
+	/**
+	Draw the given animation on the screen.
+	####parameters
+	`animationID` - ID returned from `CreateAnimation()` for sprite to draw.\n
+	*/
 	void DrawAnimation(unsigned int animationID);
 
+
+	/**
+	Draw text to the screen.
+	####parameters
+	`text` - Text to draw to the string.\n
+	`xPosition` - x position to start drawing text.\n
+	`yPosition` - y position to start drawing text.
+	*/
 	void DrawText(const char* text, const float xPosition, float yPosition);
 
-	/*
-	Set backgound color to given RGBA values.  Values are expected to be from 0 to 1.
+	/**
+	Set backgound color to given RGBA values.\n
+	__Values are expected to be from 0 to 1.__
+	####parameters
+	`r` - Red value from 0 to 1.\n
+	`g` - Green value from 0 to 1.\n
+	`b` - Blue value from 0 to 1.\n
+	`a` - Alpha value from 0 to 1. __note: 0 is totally transparent, while 1 equates total opacity.
 	*/
 	void SetBackgroundColor(const float r, const float g, const float b, const float a);
 
-	/*
+	/**
 	Call beginning of main game loop to clear the screen each frame.
 	*/
 	void ClearScreen();
 
+	/**
+	Call to poll the keyboard for user input.
+	####parameters
+	`a_key` - Key you want to poll.\n
+	####returns
+	Returns true if given key is being pressed while being polled, else returns false.	
+	*/
 	bool IsKeyDown(KEY_CODE a_key);
 
+	/**
+	Returns the time in seconds from the last frame.
+	*/
 	double GetDeltaTime();
+
+	/**
+	Returns the total time in seconds the application has been running.
+	*/
 	double GetTotalTime();
 private:
 	GLFWwindow* mWindow;

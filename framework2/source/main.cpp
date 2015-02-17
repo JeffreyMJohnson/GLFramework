@@ -22,7 +22,7 @@ bool quit = false;
 
 
 float playerMoveSpeed = 250;
-float playerJumpVelocity = 500;
+float playerJumpVelocity = 1000;
 
 Player player;
 
@@ -67,8 +67,8 @@ int main()
 
 	do{
 		//debug
-		//deltaTime = frk.GetDeltaTime();
-		deltaTime = DEBUG_TIME_DELTA;
+		deltaTime = frk.GetDeltaTime();
+		//deltaTime = DEBUG_TIME_DELTA;
 		frk.ClearScreen();
 
 		
@@ -173,7 +173,7 @@ void HandleUI()
 	if (frk.IsKeyDown(SPACE) && !player.mJumping)
 	{
 		player.mJumping = true;
- 		player.mVelocity.y = 1000;
+ 		player.mVelocity.y = playerJumpVelocity;
 	}
 
 	if (frk.IsKeyDown(ESC))

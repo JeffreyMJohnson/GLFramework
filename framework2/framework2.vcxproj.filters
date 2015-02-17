@@ -91,10 +91,10 @@
     <ClInclude Include="include\FontManager.h">
       <Filter>Header Files\framework</Filter>
     </ClInclude>
-    <ClInclude Include="include\Framework.h">
+    <ClInclude Include="include\Sprite.h">
       <Filter>Header Files\framework</Filter>
     </ClInclude>
-    <ClInclude Include="include\Sprite.h">
+    <ClInclude Include="include\framework\Framework.h">
       <Filter>Header Files\framework</Filter>
     </ClInclude>
   </ItemGroup>

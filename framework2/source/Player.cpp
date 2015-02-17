@@ -24,7 +24,7 @@ void Player::Update(float timeDelta, std::vector<Platform*>& platformList)
 	if (!isCollided)
 	{
 		//not colliding 
-		mVelocity.y -= 10;
+		mVelocity.y -= 5;
 	}
 	else
 	{
